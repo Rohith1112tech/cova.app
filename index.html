@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COVA</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:#0A0A0F;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#F2EEF5;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;}
+.screen.active{display:flex;}
+.orb{position:fixed;border-radius:50%;pointer-events:none;filter:blur(60px);z-index:0;}
+.orb1{width:400px;height:400px;top:-150px;right:-100px;background:radial-gradient(circle,rgba(201,116,138,0.35) 0%,transparent 70%);animation:f1 8s ease-in-out infinite;}
+.orb2{width:350px;height:350px;bottom:-100px;left:-100px;background:radial-gradient(circle,rgba(155,127,212,0.25) 0%,transparent 70%);animation:f2 11s ease-in-out infinite;}
+@keyframes f1{0%,100%{transform:translateY(0)}50%{transform:translateY(-25px)}}
+@keyframes f2{0%,100%{transform:translateY(0)}50%{transform:translateY(20px)}}
+.z1{position:relative;z-index:1;}
+
+/* AUTH */
+#authScreen{align-items:center;justify-content:center;overflow-y:auto;padding:20px;}
+.auth-wrap{width:100%;max-width:400px;animation:su 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;}
+@keyframes su{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.logo-sec{text-align:center;margin-bottom:32px;}
+.logo-mark{display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:24px;background:linear-gradient(135deg,#C9748A,#9B7FD4);font-size:32px;margin-bottom:14px;position:relative;animation:pulse 3s ease-in-out infinite;cursor:default;}
+.logo-mark::after{content:'';position:absolute;inset:-3px;border-radius:27px;border:1.5px solid rgba(201,116,138,0.45);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,116,138,0.3)}50%{box-shadow:0 0 25px 8px rgba(201,116,138,0.12)}}
+.logo-name{font-size:38px;font-weight:300;letter-spacing:10px;color:#F2EEF5;display:block;margin-bottom:6px;}
+.logo-tag{font-size:11px;color:#5A5570;letter-spacing:1.5px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.logo-tag::before,.logo-tag::after{content:'';display:inline-block;width:24px;height:0.5px;background:rgba(255,255,255,0.15);}
+.card{background:rgba(14,14,22,0.93);border:1px solid rgba(255,255,255,0.08);border-radius:26px;overflow:hidden;}
+.card::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,#C9748A,#9B7FD4,transparent);}
+.card-body{padding:24px;}
+.tabs{display:flex;background:rgba(8,8,14,0.8);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:3px;margin-bottom:22px;gap:3px;}
+.tab{flex:1;padding:9px;text-align:center;border-radius:9px;font-size:13px;font-weight:500;color:#5A5570;cursor:pointer;border:none;background:transparent;transition:all 0.22s ease;font-family:inherit;}
+.tab.on{color:#E8A0B0;border:1px solid rgba(201,116,138,0.3);background:linear-gradient(135deg,rgba(201,116,138,0.12),rgba(155,127,212,0.08));}
+.fg{margin-bottom:14px;}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#6A6080;margin-bottom:6px;}
+.iw{position:relative;display:flex;align-items:center;}
+.ii{position:absolute;left:13px;color:#5A5570;font-size:15px;pointer-events:none;transition:color 0.2s;}
+.fi{width:100%;padding:13px 13px 13px 40px;background:#13131C;border:1px solid rgba(255,255,255,0.07);border-radius:12px;font-size:14px;color:#F2EEF5;outline:none;transition:all 0.22s;font-family:inherit;}
+.fi::placeholder{color:#2E2A40;}
+.fi:focus{border-color:#C9748A;background:rgba(201,116,138,0.04);box-shadow:0 0 0 3px rgba(201,116,138,0.08);}
+.iw:focus-within .ii{color:#C9748A;}
+.eyeb{position:absolute;right:12px;background:none;border:none;color:#5A5570;cursor:pointer;font-size:14px;padding:3px;transition:color 0.2s;}
+.eyeb:hover{color:#C9748A;}
+.err{display:flex;align-items:center;gap:7px;background:rgba(224,112,112,0.08);border:1px solid rgba(224,112,112,0.3);border-radius:9px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#E07070;animation:shake 0.3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.sbtn{width:100%;padding:14px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;border-radius:12px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;margin-top:6px;transition:all 0.2s;letter-spacing:0.4px;font-family:inherit;}
+.sbtn:hover{opacity:0.9;}
+.sbtn:active{transform:scale(0.98);}
+.sbtn:disabled{opacity:0.6;cursor:not-allowed;}
+.ghost-btn{width:100%;background:none;border:none;color:#5A5570;font-size:12px;cursor:pointer;padding:10px;transition:color 0.2s;font-family:inherit;}
+.ghost-btn:hover{color:#C9748A;}
+.priv{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:12px;padding:9px;border-radius:9px;border:1px solid rgba(155,127,212,0.18);background:linear-gradient(135deg,rgba(201,116,138,0.04),rgba(155,127,212,0.04));font-size:10px;color:#6A6080;}
+.hidden{display:none!important;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:sp 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes sp{to{transform:rotate(360deg)}}
+.slide-in{animation:slr 0.22s cubic-bezier(0.16,1,0.3,1) forwards;}
+@keyframes slr{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+.brow{text-align:center;margin-top:22px;font-size:10px;color:#2E2A40;letter-spacing:0.5px;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+/* HOME */
+#homeScreen{background:#0A0A0F;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+.topbar-logo{font-size:20px;font-weight:300;letter-spacing:6px;color:#F2EEF5;}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.icon-btn{background:none;border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#A09AB0;cursor:pointer;padding:7px 10px;font-size:15px;transition:all 0.2s;}
+.icon-btn:hover{border-color:rgba(201,116,138,0.4);color:#C9748A;}
+.avatar-sm{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;cursor:pointer;flex-shrink:0;}
+.home-body{flex:1;overflow-y:auto;padding:0 16px 80px;}
+.friend-code-bar{margin:16px 0;padding:14px 16px;background:linear-gradient(135deg,rgba(201,116,138,0.08),rgba(155,127,212,0.06));border:1px solid rgba(201,116,138,0.2);border-radius:16px;display:flex;align-items:center;justify-content:space-between;}
+.fc-label{font-size:10px;color:#7A7090;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;}
+.fc-code{font-size:22px;font-weight:300;letter-spacing:6px;color:#E8A0B0;}
+.fc-actions{display:flex;gap:6px;}
+.sm-btn{background:rgba(201,116,138,0.12);border:1px solid rgba(201,116,138,0.25);color:#C9748A;padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.sm-btn:hover{background:rgba(201,116,138,0.22);}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px;}
+.sec-title{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#5A5570;}
+.sec-action{font-size:11px;color:#C9748A;cursor:pointer;background:none;border:none;font-family:inherit;}
+.empty{text-align:center;padding:28px 16px;color:#3A3550;font-size:12px;line-height:2;}
+.chat-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;cursor:pointer;transition:background 0.18s;margin-bottom:4px;}
+.chat-item:hover{background:rgba(255,255,255,0.04);}
+.chat-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#fff;flex-shrink:0;position:relative;}
+.online-dot{position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:#6EC9A0;border-radius:50%;border:2px solid #0A0A0F;}
+.chat-info{flex:1;min-width:0;}
+.chat-name{font-size:14px;font-weight:500;color:#F2EEF5;margin-bottom:3px;}
+.chat-preview{font-size:12px;color:#5A5570;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chat-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.chat-time{font-size:10px;color:#3A3550;}
+.req-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(201,116,138,0.05);border:1px solid rgba(201,116,138,0.15);border-radius:12px;margin-bottom:6px;}
+.req-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#9B7FD4,#C9748A);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;flex-shrink:0;}
+.req-info{flex:1;}
+.req-name{font-size:13px;color:#F2EEF5;margin-bottom:1px;}
+.req-code{font-size:10px;color:#7A7090;}
+.req-btns{display:flex;gap:5px;}
+.acc-btn{background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;font-family:inherit;}
+.rej-btn{background:none;border:1px solid rgba(255,255,255,0.1);color:#7A7090;padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;font-family:inherit;}
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(10,10,15,0.95);border-top:1px solid rgba(255,255,255,0.06);padding:10px 0 14px;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.nav-icon{font-size:20px;}
+.nav-label{font-size:9px;letter-spacing:0.5px;color:#5A5570;transition:color 0.2s;}
+.nav-btn.on .nav-label{color:#C9748A;}
+
+/* ADD FRIEND MODAL */
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:flex-end;justify-content:center;z-index:100;}
+.modal-overlay.open{display:flex;}
+.modal{width:100%;max-width:480px;background:#12121A;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,0.08);padding:24px;animation:slideUp2 0.3s cubic-bezier(0.16,1,0.3,1);}
+@keyframes slideUp2{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-size:16px;font-weight:500;color:#F2EEF5;margin-bottom:6px;}
+.modal-sub{font-size:12px;color:#5A5570;margin-bottom:20px;}
+.code-input{width:100%;padding:16px;background:#0D0D15;border:1px solid rgba(255,255,255,0.1);border-radius:14px;font-size:24px;font-weight:300;letter-spacing:8px;color:#E8A0B0;text-align:center;text-transform:uppercase;outline:none;font-family:inherit;transition:all 0.2s;}
+.code-input:focus{border-color:#C9748A;box-shadow:0 0 0 3px rgba(201,116,138,0.1);}
+.code-input::placeholder{color:#2E2A40;letter-spacing:4px;font-size:16px;}
+.modal-msg{text-align:center;padding:10px;font-size:12px;margin-top:8px;border-radius:8px;}
+.modal-msg.ok{color:#6EC9A0;background:rgba(110,201,160,0.08);}
+.modal-msg.er{color:#E07070;background:rgba(224,112,112,0.08);}
+
+/* CHAT */
+#chatScreen{background:#0A0A0F;}
+.chat-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+.back-btn{background:none;border:none;color:#A09AB0;cursor:pointer;font-size:20px;padding:4px;transition:color 0.2s;}
+.back-btn:hover{color:#C9748A;}
+.chat-peer{display:flex;align-items:center;gap:10px;flex:1;}
+.peer-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#9B7FD4,#C9748A);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0;}
+.peer-name{font-size:15px;font-weight:500;color:#F2EEF5;}
+.peer-status{font-size:11px;color:#6EC9A0;}
+.msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;}
+.msg-row{display:flex;align-items:flex-end;gap:6px;}
+.msg-row.me{flex-direction:row-reverse;}
+.bubble{max-width:72%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;position:relative;word-break:break-word;}
+.bubble.them{background:#1A1A26;color:#F2EEF5;border-bottom-left-radius:4px;}
+.bubble.me{background:linear-gradient(135deg,#C9748A,#9B7FD4);color:#fff;border-bottom-right-radius:4px;}
+.bubble.deleted{font-style:italic;opacity:0.4;font-size:12px;}
+.msg-time{font-size:9px;color:#3A3550;margin-bottom:4px;white-space:nowrap;}
+.msg-status{font-size:9px;color:rgba(255,255,255,0.5);margin-top:2px;text-align:right;}
+.msg-ctx-menu{position:fixed;background:#1E1E2A;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:4px;z-index:50;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.ctx-item{padding:8px 12px;font-size:12px;color:#A09AB0;cursor:pointer;border-radius:6px;transition:background 0.15s;}
+.ctx-item:hover{background:rgba(255,255,255,0.06);color:#F2EEF5;}
+.ctx-item.danger{color:#E07070;}
+.ctx-item.danger:hover{background:rgba(224,112,112,0.08);}
+.chat-input-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+.msg-input{flex:1;padding:11px 14px;background:#13131C;border:1px solid rgba(255,255,255,0.07);border-radius:22px;font-size:14px;color:#F2EEF5;outline:none;resize:none;font-family:inherit;transition:border-color 0.2s;line-height:1.4;}
+.msg-input::placeholder{color:#3A3550;}
+.msg-input:focus{border-color:rgba(201,116,138,0.4);}
+.send-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.2s;flex-shrink:0;}
+.send-btn:hover{opacity:0.9;transform:scale(1.05);}
+.send-btn:active{transform:scale(0.95);}
+.attach-btn{background:none;border:none;color:#5A5570;cursor:pointer;font-size:20px;padding:4px;transition:color 0.2s;}
+.attach-btn:hover{color:#C9748A;}
+
+/* PROFILE */
+#profileScreen{background:#0A0A0F;overflow-y:auto;}
+.prof-header{padding:40px 20px 20px;text-align:center;}
+.prof-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;margin:0 auto 14px;}
+.prof-name{font-size:22px;font-weight:300;letter-spacing:1px;color:#F2EEF5;margin-bottom:4px;}
+.prof-email{font-size:12px;color:#5A5570;margin-bottom:16px;}
+.prof-code-box{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(201,116,138,0.1),rgba(155,127,212,0.1));border:1px solid rgba(201,116,138,0.25);border-radius:12px;padding:10px 18px;}
+.prof-code-label{font-size:10px;color:#7A7090;letter-spacing:1px;text-transform:uppercase;}
+.prof-code{font-size:20px;letter-spacing:5px;color:#E8A0B0;font-weight:300;}
+.prof-section{margin:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;}
+.prof-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.prof-row:last-child{border-bottom:none;}
+.prof-row-left{display:flex;align-items:center;gap:10px;}
+.prof-row-icon{font-size:16px;width:20px;text-align:center;}
+.prof-row-label{font-size:14px;color:#A09AB0;}
+.prof-row-val{font-size:12px;color:#5A5570;}
+.toggle{width:40px;height:22px;background:#2A2A38;border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s;}
+.toggle.on{background:linear-gradient(135deg,#C9748A,#9B7FD4);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform 0.2s;}
+.toggle.on::after{transform:translateX(18px);}
+.signout-row{margin:16px;padding:14px;background:rgba(224,112,112,0.05);border:1px solid rgba(224,112,112,0.15);border-radius:14px;text-align:center;cursor:pointer;transition:all 0.2s;font-size:13px;color:#E07070;}
+.signout-row:hover{background:rgba(224,112,112,0.1);}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<!-- AUTH SCREEN -->
+<div class="screen active" id="authScreen">
+  <div class="auth-wrap z1">
+    <div class="logo-sec">
+      <div class="logo-mark">♡</div>
+      <span class="logo-name">COVA</span>
+      <p class="logo-tag">Your private space, together</p>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="tabs">
+          <button class="tab on" onclick="switchTab('login')" id="tabLogin">Sign In</button>
+          <button class="tab" onclick="switchTab('signup')" id="tabSignup">Create Account</button>
+        </div>
+        <!-- Login -->
+        <div id="loginForm">
+          <div class="fg"><label class="fl">Email</label><div class="iw"><span class="ii">✉</span><input type="email" class="fi" id="liEmail" placeholder="you@example.com" autocomplete="email"></div></div>
+          <div class="fg"><label class="fl">Password</label><div class="iw"><span class="ii">🔒</span><input type="password" class="fi" id="liPwd" placeholder="••••••••" autocomplete="current-password"><button class="eyeb" onclick="ep('liPwd',this)" type="button">👁</button></div></div>
+          <div id="liErr" class="err hidden"></div>
+          <button class="sbtn" onclick="doLogin()" id="liBtn" data-lbl="Sign In to COVA">Sign In to COVA</button>
+          <button class="ghost-btn" onclick="doForgot()">Forgot password?</button>
+        </div>
+        <!-- Signup -->
+        <div id="signupForm" class="hidden">
+          <div class="fg"><label class="fl">Your Name</label><div class="iw"><span class="ii">👤</span><input type="text" class="fi" id="suName" placeholder="What should we call you?" autocomplete="name"></div></div>
+          <div class="fg"><label class="fl">Email</label><div class="iw"><span class="ii">✉</span><input type="email" class="fi" id="suEmail" placeholder="you@example.com" autocomplete="email"></div></div>
+          <div class="fg"><label class="fl">Password</label><div class="iw"><span class="ii">🔒</span><input type="password" class="fi" id="suPwd" placeholder="••••••••" autocomplete="new-password"><button class="eyeb" onclick="ep('suPwd',this)" type="button">👁</button></div></div>
+          <div class="fg"><label class="fl">Confirm Password</label><div class="iw"><span class="ii">🛡</span><input type="password" class="fi" id="suCfm" placeholder="••••••••" autocomplete="new-password"><button class="eyeb" onclick="ep('suCfm',this)" type="button">👁</button></div></div>
+          <div id="suErr" class="err hidden"></div>
+          <button class="sbtn" onclick="doSignup()" id="suBtn" data-lbl="Create My Account">Create My Account</button>
+          <div class="priv">🛡 Secured by Firebase · Passwords encrypted</div>
+        </div>
+      </div>
+    </div>
+    <div class="brow">♡ <span>Built with privacy, designed with love</span> ♡</div>
+  </div>
+</div>
+
+<!-- HOME SCREEN -->
+<div class="screen" id="homeScreen">
+  <div class="topbar z1">
+    <span class="topbar-logo">COVA</span>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="openAddFriend()">➕</button>
+      <div class="avatar-sm" id="homeAvatar" onclick="gotoProfile()">?</div>
+    </div>
+  </div>
+  <div class="home-body z1">
+    <div class="friend-code-bar">
+      <div>
+        <div class="fc-label">Your Friend Code</div>
+        <div class="fc-code" id="homeFriendCode">—</div>
+      </div>
+      <div class="fc-actions">
+        <button class="sm-btn" onclick="copyCode()">Copy</button>
+        <button class="sm-btn" onclick="openAddFriend()">Add Friend</button>
+      </div>
+    </div>
+    <div id="reqSection" class="hidden">
+      <div class="sec-hdr"><span class="sec-title">Friend Requests</span></div>
+      <div id="reqList"></div>
+    </div>
+    <div class="sec-hdr">
+      <span class="sec-title">Chats</span>
+      <button class="sec-action" onclick="openAddFriend()">+ New</button>
+    </div>
+    <div id="chatList">
+      <div class="empty">💬 No chats yet<br><span style="font-size:10px">Add a friend using their 5-digit code</span></div>
+    </div>
+  </div>
+  <div class="bottom-nav z1">
+    <button class="nav-btn on"><span class="nav-icon">💬</span><span class="nav-label">CHATS</span></button>
+    <button class="nav-btn" onclick="openAddFriend()"><span class="nav-icon">➕</span><span class="nav-label">ADD</span></button>
+    <button class="nav-btn" onclick="gotoProfile()"><span class="nav-icon">👤</span><span class="nav-label">PROFILE</span></button>
+  </div>
+  <!-- Add Friend Modal -->
+  <div class="modal-overlay" id="addFriendModal" onclick="closeModalOut(event)">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Add Friend</div>
+      <div class="modal-sub">Enter their 5-digit COVA friend code</div>
+      <input type="text" class="code-input" id="friendCodeInput" placeholder="A3X9K" maxlength="5" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')sendFriendReq()">
+      <div id="addFriendMsg" class="hidden"></div>
+      <button class="sbtn" onclick="sendFriendReq()" style="margin-top:14px;">Send Friend Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT SCREEN -->
+<div class="screen" id="chatScreen">
+  <div class="chat-topbar z1">
+    <button class="back-btn" onclick="gotoHome()">←</button>
+    <div class="chat-peer">
+      <div class="peer-avatar" id="peerAvatar">?</div>
+      <div>
+        <div class="peer-name" id="peerName">—</div>
+        <div class="peer-status">Online</div>
+      </div>
+    </div>
+    <button class="icon-btn" onclick="alert('Video call coming in Phase 3!')">📹</button>
+  </div>
+  <div class="msgs" id="msgList"></div>
+  <div class="chat-input-bar z1">
+    <button class="attach-btn" onclick="alert('File sharing coming in Phase 3!')">📎</button>
+    <textarea class="msg-input" id="msgInput" placeholder="Type a message..." rows="1" onkeydown="msgKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- PROFILE SCREEN -->
+<div class="screen" id="profileScreen">
+  <div class="topbar z1">
+    <button class="back-btn" onclick="gotoHome()">←</button>
+    <span style="font-size:16px;font-weight:300;letter-spacing:4px;color:#F2EEF5;">Profile</span>
+    <div style="width:40px"></div>
+  </div>
+  <div class="z1">
+    <div class="prof-header">
+      <div class="prof-avatar" id="profAvatar">?</div>
+      <div class="prof-name" id="profName">—</div>
+      <div class="prof-email" id="profEmail">—</div>
+      <div class="prof-code-box">
+        <div><div class="prof-code-label">Friend Code</div><div class="prof-code" id="profCode">—</div></div>
+        <button class="sm-btn" onclick="copyCode()">Copy</button>
+      </div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-row"><div class="prof-row-left"><span class="prof-row-icon">📸</span><span class="prof-row-label">Screenshot alerts</span></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="prof-row"><div class="prof-row-left"><span class="prof-row-icon">✓</span><span class="prof-row-label">Read receipts</span></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="prof-row"><div class="prof-row-left"><span class="prof-row-icon">🟢</span><span class="prof-row-label">Online status</span></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-row"><div class="prof-row-left"><span class="prof-row-icon">🔒</span><span class="prof-row-label">Privacy</span></div><span class="prof-row-val">End-to-end encrypted</span></div>
+      <div class="prof-row"><div class="prof-row-left"><span class="prof-row-icon">🛡</span><span class="prof-row-label">Security</span></div><span class="prof-row-val">Firebase Auth</span></div>
+    </div>
+    <div class="signout-row" onclick="doSignout()">Sign Out</div>
+    <div style="height:40px"></div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,updateProfile,sendPasswordResetEmail}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import{getFirestore,doc,setDoc,getDoc,addDoc,collection,query,where,getDocs,onSnapshot,orderBy,serverTimestamp,updateDoc,arrayUnion}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const cfg={
+  apiKey:"AIzaSyB3D8kJBTWlau1krR0l1AygspGyK5iFXjA",
+  authDomain:"cova-app-db388.firebaseapp.com",
+  projectId:"cova-app-db388",
+  storageBucket:"cova-app-db388.firebasestorage.app",
+  messagingSenderId:"990241632749",
+  appId:"1:990241632749:web:3fd86982a069d1ed6637e4"
+};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let ME=null,MY_PROFILE=null,CHAT_ID=null,PEER=null,msgUnsub=null;
+
+function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<5;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+async function uniqueCode(){let code,n=0;do{code=genCode();const q=query(collection(db,'users'),where('friendCode','==',code));const s=await getDocs(q);if(s.empty)return code;n++;}while(n<20);return genCode();}
+
+onAuthStateChanged(auth,async u=>{
+  if(u){ME=u;MY_PROFILE=await getProfile(u.uid);if(MY_PROFILE)showHome();else showAuth();}
+  else{ME=null;MY_PROFILE=null;showAuth();}
+});
+
+async function getProfile(uid){const s=await getDoc(doc(db,'users',uid));return s.exists()?s.data():null;}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showAuth(){showScreen('authScreen');}
+
+function showHome(){
+  showScreen('homeScreen');
+  document.getElementById('homeAvatar').textContent=MY_PROFILE.displayName.charAt(0).toUpperCase();
+  document.getElementById('homeFriendCode').textContent=MY_PROFILE.friendCode;
+  window._fc=MY_PROFILE.friendCode;
+  loadChats();
+  loadRequests();
+}
+
+function showChat(peer,chatId){
+  PEER=peer;CHAT_ID=chatId;
+  showScreen('chatScreen');
+  document.getElementById('peerAvatar').textContent=peer.displayName.charAt(0).toUpperCase();
+  document.getElementById('peerName').textContent=peer.displayName;
+  loadMessages(chatId);
+}
+
+function showProfile(){
+  showScreen('profileScreen');
+  document.getElementById('profAvatar').textContent=MY_PROFILE.displayName.charAt(0).toUpperCase();
+  document.getElementById('profName').textContent=MY_PROFILE.displayName;
+  document.getElementById('profEmail').textContent=ME.email;
+  document.getElementById('profCode').textContent=MY_PROFILE.friendCode;
+}
+
+window.gotoHome=function(){if(msgUnsub){msgUnsub();msgUnsub=null;}CHAT_ID=null;PEER=null;showHome();};
+window.gotoProfile=function(){showProfile();};
+
+window.switchTab=function(t){
+  document.getElementById('tabLogin').classList.toggle('on',t==='login');
+  document.getElementById('tabSignup').classList.toggle('on',t==='signup');
+  document.getElementById('loginForm').classList.toggle('hidden',t!=='login');
+  document.getElementById('signupForm').classList.toggle('hidden',t!=='signup');
+  clearErrs();
+};
+
+function clearErrs(){['liErr','suErr'].forEach(id=>{const e=document.getElementById(id);e.classList.add('hidden');e.style.cssText='';});}
+function showErr(id,msg){const e=document.getElementById(id);e.innerHTML='⚠ '+msg;e.classList.remove('hidden');}
+function setLoading(id,on){const b=document.getElementById(id);b.disabled=on;b.innerHTML=on?'<span class="spin"></span>Please wait...':b.dataset.lbl;}
+function errMsg(c){return({'auth/email-already-in-use':'Email already registered.','auth/invalid-email':'Enter a valid email.','auth/weak-password':'Password needs 6+ characters.','auth/user-not-found':'No account with this email.','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Incorrect email or password.','auth/too-many-requests':'Too many attempts. Wait a moment.','auth/network-request-failed':'Network error.'})[c]||'Something went wrong.';}
+
+window.ep=function(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';};
+
+window.doSignup=async function(){
+  const name=document.getElementById('suName').value.trim();
+  const email=document.getElementById('suEmail').value.trim();
+  const pwd=document.getElementById('suPwd').value;
+  const cfm=document.getElementById('suCfm').value;
+  if(!name)return showErr('suErr','Enter your name.');
+  if(!email||!/\S+@\S+\.\S+/.test(email))return showErr('suErr','Enter a valid email.');
+  if(pwd.length<6)return showErr('suErr','Password needs 6+ characters.');
+  if(pwd!==cfm)return showErr('suErr','Passwords do not match.');
+  setLoading('suBtn',true);
+  try{
+    const c=await createUserWithEmailAndPassword(auth,email,pwd);
+    await updateProfile(c.user,{displayName:name});
+    const fc=await uniqueCode();
+    await setDoc(doc(db,'users',c.user.uid),{uid:c.user.uid,displayName:name,email,friendCode:fc,isOnline:true,createdAt:serverTimestamp(),friends:[],privacySettings:{screenshotNotifications:true,readReceipts:true,onlineStatus:true}});
+    MY_PROFILE={uid:c.user.uid,displayName:name,email,friendCode:fc,friends:[]};
+    showHome();
+  }catch(e){showErr('suErr',errMsg(e.code));}
+  finally{setLoading('suBtn',false);}
+};
+
+window.doLogin=async function(){
+  const email=document.getElementById('liEmail').value.trim();
+  const pwd=document.getElementById('liPwd').value;
+  if(!email)return showErr('liErr','Enter your email.');
+  if(!pwd)return showErr('liErr','Enter your password.');
+  setLoading('liBtn',true);
+  try{await signInWithEmailAndPassword(auth,email,pwd);}
+  catch(e){showErr('liErr',errMsg(e.code));setLoading('liBtn',false);}
+};
+
+window.doForgot=async function(){
+  const email=document.getElementById('liEmail').value.trim();
+  if(!email)return showErr('liErr','Enter your email above first.');
+  try{
+    await sendPasswordResetEmail(auth,email);
+    const e=document.getElementById('liErr');
+    e.innerHTML='✅ Reset email sent!';e.classList.remove('hidden');
+    e.style.color='#6EC9A0';e.style.background='rgba(110,201,160,0.08)';e.style.borderColor='rgba(110,201,160,0.3)';
+  }catch(e){showErr('liErr',errMsg(e.code));}
+};
+
+window.doSignout=async function(){await signOut(auth);};
+
+window.copyCode=function(){
+  navigator.clipboard.writeText(window._fc||'');
+  document.querySelectorAll('.sm-btn').forEach(b=>{
+    if(b.textContent==='Copy'){b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',2000);}
+  });
+};
+
+window.openAddFriend=function(){
+  document.getElementById('addFriendModal').classList.add('open');
+  document.getElementById('friendCodeInput').focus();
+  document.getElementById('addFriendMsg').className='hidden';
+  document.getElementById('addFriendMsg').textContent='';
+};
+window.closeModalOut=function(e){if(e.target.id==='addFriendModal')document.getElementById('addFriendModal').classList.remove('open');};
+
+window.sendFriendReq=async function(){
+  const code=document.getElementById('friendCodeInput').value.trim().toUpperCase();
+  const msgEl=document.getElementById('addFriendMsg');
+  msgEl.className='modal-msg';
+  if(code.length!==5){msgEl.textContent='Enter a 5-digit code.';msgEl.className='modal-msg er';return;}
+  if(code===MY_PROFILE.friendCode){msgEl.textContent="That's your own code!";msgEl.className='modal-msg er';return;}
+  try{
+    const q=query(collection(db,'users'),where('friendCode','==',code));
+    const snap=await getDocs(q);
+    if(snap.empty){msgEl.textContent='No user found with this code.';msgEl.className='modal-msg er';return;}
+    const peer=snap.docs[0].data();
+    if((MY_PROFILE.friends||[]).includes(peer.uid)){msgEl.textContent='Already friends!';msgEl.className='modal-msg er';return;}
+    const reqQ=query(collection(db,'friendRequests'),where('senderId','==',ME.uid),where('receiverId','==',peer.uid),where('status','==','pending'));
+    const reqSnap=await getDocs(reqQ);
+    if(!reqSnap.empty){msgEl.textContent='Request already sent!';msgEl.className='modal-msg er';return;}
+    await addDoc(collection(db,'friendRequests'),{senderId:ME.uid,senderName:MY_PROFILE.displayName,senderCode:MY_PROFILE.friendCode,receiverId:peer.uid,status:'pending',createdAt:serverTimestamp()});
+    msgEl.textContent='✅ Friend request sent to '+peer.displayName+'!';
+    msgEl.className='modal-msg ok';
+    document.getElementById('friendCodeInput').value='';
+    setTimeout(()=>document.getElementById('addFriendModal').classList.remove('open'),2000);
+  }catch(e){msgEl.textContent='Error. Try again.';msgEl.className='modal-msg er';}
+};
+
+function loadRequests(){
+  const q=query(collection(db,'friendRequests'),where('receiverId','==',ME.uid),where('status','==','pending'));
+  onSnapshot(q,snap=>{
+    const reqs=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const sec=document.getElementById('reqSection');
+    const list=document.getElementById('reqList');
+    if(!reqs.length){sec.classList.add('hidden');return;}
+    sec.classList.remove('hidden');
+    list.innerHTML=reqs.map(r=>`
+      <div class="req-item">
+        <div class="req-avatar">${r.senderName.charAt(0).toUpperCase()}</div>
+        <div class="req-info"><div class="req-name">${r.senderName}</div><div class="req-code">Code: ${r.senderCode}</div></div>
+        <div class="req-btns">
+          <button class="acc-btn" onclick="acceptReq('${r.id}','${r.senderId}')">Accept</button>
+          <button class="rej-btn" onclick="rejectReq('${r.id}')">Reject</button>
+        </div>
+      </div>`).join('');
+  });
+}
+
+window.acceptReq=async function(reqId,senderId){
+  try{
+    await updateDoc(doc(db,'users',ME.uid),{friends:arrayUnion(senderId)});
+    await updateDoc(doc(db,'users',senderId),{friends:arrayUnion(ME.uid)});
+    const chatRef=await addDoc(collection(db,'chats'),{participants:[ME.uid,senderId],createdAt:serverTimestamp(),lastMessage:'',lastMessageTime:serverTimestamp()});
+    await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted',chatId:chatRef.id});
+    MY_PROFILE=await getProfile(ME.uid);
+    loadChats();
+  }catch(e){console.error(e);}
+};
+
+window.rejectReq=async function(reqId){
+  await updateDoc(doc(db,'friendRequests',reqId),{status:'rejected'});
+};
+
+function loadChats(){
+  const q=query(collection(db,'chats'),where('participants','array-contains',ME.uid),orderBy('lastMessageTime','desc'));
+  onSnapshot(q,async snap=>{
+    const list=document.getElementById('chatList');
+    if(snap.empty){list.innerHTML='<div class="empty">💬 No chats yet<br><span style="font-size:10px">Add a friend using their 5-digit code</span></div>';return;}
+    list.innerHTML='';
+    for(const d of snap.docs){
+      const chat=d.data();
+      const peerId=chat.participants.find(p=>p!==ME.uid);
+      const peer=await getProfile(peerId);
+      if(!peer)continue;
+      const item=document.createElement('div');
+      item.className='chat-item';
+      item.innerHTML=`
+        <div class="chat-avatar">${peer.displayName.charAt(0).toUpperCase()}<div class="online-dot"></div></div>
+        <div class="chat-info">
+          <div class="chat-name">${peer.displayName}</div>
+          <div class="chat-preview">${chat.lastMessage||'Say hello! 👋'}</div>
+        </div>
+        <div class="chat-meta"><span class="chat-time">${chat.lastMessageTime?.toDate?fmtTime(chat.lastMessageTime.toDate()):''}</span></div>`;
+      item.onclick=()=>showChat(peer,d.id);
+      list.appendChild(item);
+    }
+  });
+}
+
+function fmtTime(d){const now=new Date(),diff=now-d;if(diff<60000)return'now';if(diff<3600000)return Math.floor(diff/60000)+'m';if(diff<86400000)return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');return d.getDate()+'/'+(d.getMonth()+1);}
+
+function loadMessages(chatId){
+  if(msgUnsub)msgUnsub();
+  const q=query(collection(db,'chats',chatId,'messages'),orderBy('createdAt','asc'));
+  msgUnsub=onSnapshot(q,snap=>{
+    const list=document.getElementById('msgList');
+    list.innerHTML='';
+    snap.docs.forEach(d=>{
+      const m={id:d.id,...d.data()};
+      const isMe=m.senderId===ME.uid;
+      const row=document.createElement('div');
+      row.className='msg-row'+(isMe?' me':'');
+      if(m.deleted){
+        row.innerHTML=`<div class="bubble ${isMe?'me':'them'} deleted">🚫 This message was deleted</div>`;
+      }else{
+        row.innerHTML=`
+          <div class="bubble ${isMe?'me':'them'}" oncontextmenu="showCtx(event,'${d.id}',${isMe})" ondblclick="showCtx(event,'${d.id}',${isMe})">
+            ${m.text}<div class="msg-status">${isMe?'✓✓':''}</div>
+          </div>
+          <div class="msg-time">${m.createdAt?.toDate?fmtTime(m.createdAt.toDate()):''}</div>`;
+      }
+      list.appendChild(row);
+    });
+    list.scrollTop=list.scrollHeight;
+  });
+}
+
+window.sendMsg=async function(){
+  const input=document.getElementById('msgInput');
+  const text=input.value.trim();
+  if(!text||!CHAT_ID)return;
+  input.value='';input.style.height='';
+  try{
+    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{text,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false});
+    await updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:text,lastMessageTime:serverTimestamp()});
+  }catch(e){console.error(e);}
+};
+
+window.msgKey=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}};
+window.autoResize=function(el){el.style.height='';el.style.height=Math.min(el.scrollHeight,120)+'px';};
+
+let ctxMenu=null;
+window.showCtx=function(e,msgId,isMe){
+  e.preventDefault();
+  if(ctxMenu)ctxMenu.remove();
+  const menu=document.createElement('div');
+  menu.className='msg-ctx-menu';
+  menu.style.top=(e.clientY-80)+'px';
+  menu.style.left=Math.min(e.clientX,window.innerWidth-160)+'px';
+  menu.innerHTML=`
+    <div class="ctx-item" onclick="delForMe('${msgId}')">🗑 Delete for me</div>
+    ${isMe?`<div class="ctx-item danger" onclick="delForBoth('${msgId}')">🚫 Delete for everyone</div>`:''}
+    <div class="ctx-item" onclick="if(ctxMenu)ctxMenu.remove()">✕ Cancel</div>`;
+  document.body.appendChild(menu);
+  ctxMenu=menu;
+  setTimeout(()=>document.addEventListener('click',()=>{menu.remove();ctxMenu=null;},{once:true}),50);
+};
+
+window.delForMe=async function(msgId){
+  if(ctxMenu)ctxMenu.remove();
+  await updateDoc(doc(db,'chats',CHAT_ID,'messages',msgId),{deletedFor:arrayUnion(ME.uid)});
+};
+window.delForBoth=async function(msgId){
+  if(ctxMenu)ctxMenu.remove();
+  await updateDoc(doc(db,'chats',CHAT_ID,'messages',msgId),{deleted:true,text:'This message was deleted'});
+};
+
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  if(document.getElementById('authScreen').classList.contains('active')){
+    if(document.getElementById('tabLogin').classList.contains('on'))doLogin();
+    else doSignup();
+  }
+});
+</script>
+</body>
+</html>
