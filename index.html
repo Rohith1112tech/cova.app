@@ -13,7 +13,6 @@
 }
 body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--txt);overflow:hidden;position:relative;}
 
-/* ORBs */
 .orb{position:fixed;border-radius:50%;pointer-events:none;filter:blur(70px);z-index:0;}
 .orb1{width:420px;height:420px;top:-160px;right:-120px;background:radial-gradient(circle,rgba(201,116,138,0.38) 0%,transparent 70%);animation:f1 8s ease-in-out infinite;}
 .orb2{width:380px;height:380px;bottom:-120px;left:-120px;background:radial-gradient(circle,rgba(155,127,212,0.28) 0%,transparent 70%);animation:f2 11s ease-in-out infinite;}
@@ -22,12 +21,10 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 @keyframes f2{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(22px) scale(0.95)}}
 @keyframes f3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-48%,-52%) scale(1.1)}}
 
-/* SCREENS */
 .screen{position:absolute;inset:0;display:none;flex-direction:column;z-index:1;}
 .screen.active{display:flex;}
 .z1{position:relative;z-index:2;}
 
-/* PAGE TRANSITIONS */
 .slide-from-right{animation:sfr 0.35s cubic-bezier(0.16,1,0.3,1) forwards;}
 .slide-from-left{animation:sfl 0.35s cubic-bezier(0.16,1,0.3,1) forwards;}
 .slide-out-left{animation:sol 0.3s cubic-bezier(0.4,0,1,1) forwards;}
@@ -37,7 +34,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 @keyframes sol{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-40px)}}
 @keyframes fup{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 
-/* === AUTH === */
+/* AUTH */
 #authScreen{align-items:center;justify-content:center;overflow-y:auto;padding:20px;}
 .auth-wrap{width:100%;max-width:400px;animation:au 0.7s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;}
 @keyframes au{from{opacity:0;transform:translateY(32px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -81,7 +78,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 @keyframes sp{to{transform:rotate(360deg)}}
 .brow{text-align:center;margin-top:24px;font-size:10px;color:#2E2A40;letter-spacing:0.5px;display:flex;align-items:center;justify-content:center;gap:6px;}
 
-/* === HOME === */
+/* HOME */
 #homeScreen{background:var(--bg);}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
 .topbar-logo{font-size:22px;font-weight:300;letter-spacing:7px;color:var(--txt);}
@@ -94,7 +91,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .home-body{flex:1;overflow-y:auto;padding:0 0 80px;scroll-behavior:smooth;}
 .home-body::-webkit-scrollbar{display:none;}
 
-/* === STORIES BAR === */
+/* STORIES BAR */
 .stories-bar{padding:14px 16px 10px;overflow-x:auto;display:flex;gap:12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.04);}
 .stories-bar::-webkit-scrollbar{display:none;}
 .story-item{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;transition:transform 0.22s;}
@@ -104,12 +101,11 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .story-ring.seen{background:linear-gradient(135deg,#3A3550,#2A2A38);}
 .story-ring.add-story{background:rgba(255,255,255,0.06);border:1.5px dashed rgba(255,255,255,0.2);}
 .story-inner{width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:600;border:2.5px solid var(--bg);overflow:hidden;}
-.story-inner.has-img{border:2.5px solid var(--bg);}
 .add-plus{position:absolute;bottom:1px;right:1px;width:20px;height:20px;background:linear-gradient(135deg,var(--pink),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;border:2px solid var(--bg);z-index:2;line-height:1;}
 .story-name{font-size:10px;color:var(--muted);max-width:64px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .story-name.mine{color:#E8A0B0;}
 
-/* === STORY VIEWER === */
+/* STORY VIEWER */
 #storyViewer{position:fixed;inset:0;background:#000;z-index:200;display:none;flex-direction:column;}
 #storyViewer.open{display:flex;}
 .sv-progress{display:flex;gap:3px;padding:12px 12px 0;}
@@ -134,7 +130,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .sv-heart{background:none;border:none;font-size:24px;cursor:pointer;transition:transform 0.2s;color:#fff;}
 .sv-heart:hover{transform:scale(1.3);}
 
-/* === ADD STORY MODAL === */
+/* ADD STORY MODAL */
 .story-modal{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:150;display:none;align-items:flex-end;justify-content:center;}
 .story-modal.open{display:flex;}
 .sm-sheet{width:100%;max-width:480px;background:#14141E;border-radius:24px 24px 0 0;border-top:1px solid var(--border);padding:24px;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);}
@@ -153,7 +149,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .text-story-inp::placeholder{color:var(--dim);}
 .hidden-file{display:none;}
 
-/* === FRIEND CODE BAR === */
+/* FRIEND CODE BAR */
 .friend-code-bar{margin:14px 16px 0;padding:14px 16px;background:linear-gradient(135deg,rgba(201,116,138,0.08),rgba(155,127,212,0.06));border:1px solid rgba(201,116,138,0.2);border-radius:18px;display:flex;align-items:center;justify-content:space-between;}
 .fc-label{font-size:10px;color:#7A7090;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;}
 .fc-code{font-size:22px;font-weight:300;letter-spacing:7px;color:#E8A0B0;}
@@ -168,7 +164,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .sec-action:hover{opacity:0.75;}
 .empty{text-align:center;padding:30px 16px;color:#3A3550;font-size:12px;line-height:2.2;}
 
-/* === REQUEST ITEMS === */
+/* REQUEST ITEMS */
 .req-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(201,116,138,0.05);border:1px solid rgba(201,116,138,0.15);border-radius:14px;margin-bottom:7px;animation:fup 0.3s ease forwards;}
 .req-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink));display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0;}
 .req-info{flex:1;}
@@ -181,7 +177,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .rej-btn{background:none;border:1px solid rgba(255,255,255,0.1);color:#7A7090;padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.2s;}
 .rej-btn:hover{border-color:rgba(224,112,112,0.4);color:var(--red);}
 
-/* === CHAT LIST === */
+/* CHAT LIST */
 .chat-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:all 0.2s;margin-bottom:2px;border-radius:16px;margin:2px 8px;}
 .chat-item:hover{background:rgba(255,255,255,0.04);}
 .chat-item:active{transform:scale(0.98);}
@@ -193,7 +189,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .chat-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
 .chat-time{font-size:10px;color:var(--dim);}
 
-/* === BOTTOM NAV === */
+/* BOTTOM NAV */
 .bottom-nav{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(10,10,15,0.97);border-top:1px solid rgba(255,255,255,0.06);padding:10px 0 16px;backdrop-filter:blur(20px);}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;transition:all 0.22s;}
 .nav-btn:active{transform:scale(0.88);}
@@ -202,7 +198,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .nav-label{font-size:9px;letter-spacing:0.5px;color:var(--muted);transition:color 0.2s;}
 .nav-btn.on .nav-label{color:var(--pink);}
 
-/* === ADD FRIEND MODAL === */
+/* ADD FRIEND MODAL */
 .modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.65);display:none;align-items:flex-end;justify-content:center;z-index:100;}
 .modal-overlay.open{display:flex;}
 .modal{width:100%;max-width:480px;background:#14141E;border-radius:24px 24px 0 0;border-top:1px solid var(--border);padding:24px;animation:slideUp 0.32s cubic-bezier(0.16,1,0.3,1);}
@@ -216,7 +212,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .modal-msg.ok{color:var(--green);background:rgba(110,201,160,0.08);}
 .modal-msg.er{color:var(--red);background:rgba(224,112,112,0.08);}
 
-/* === CHAT SCREEN === */
+/* CHAT SCREEN */
 #chatScreen{background:var(--bg);}
 .chat-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
 .back-btn{background:none;border:none;color:#A09AB0;cursor:pointer;font-size:22px;padding:4px;transition:all 0.2s;line-height:1;}
@@ -252,7 +248,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 .attach-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:21px;padding:5px;transition:all 0.2s;}
 .attach-btn:hover{color:var(--pink);transform:scale(1.1);}
 
-/* === PROFILE === */
+/* PROFILE */
 #profileScreen{background:var(--bg);overflow-y:auto;}
 .prof-header{padding:44px 20px 24px;text-align:center;}
 .prof-avatar{width:86px;height:86px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;margin:0 auto 16px;box-shadow:0 8px 28px rgba(201,116,138,0.3);transition:transform 0.2s;cursor:pointer;}
@@ -288,7 +284,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
 
-<!-- ====== AUTH SCREEN ====== -->
+<!-- AUTH SCREEN -->
 <div class="screen active" id="authScreen">
   <div class="auth-wrap z1">
     <div class="logo-sec">
@@ -324,7 +320,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
   </div>
 </div>
 
-<!-- ====== HOME SCREEN ====== -->
+<!-- HOME SCREEN -->
 <div class="screen" id="homeScreen">
   <div class="topbar z1">
     <span class="topbar-logo">COVA</span>
@@ -334,9 +330,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
     </div>
   </div>
 
-  <!-- STORIES BAR -->
   <div class="stories-bar z1" id="storiesBar">
-    <!-- My story add button -->
     <div class="story-item" onclick="openAddStory()" id="myStoryBtn">
       <div class="story-ring add-story">
         <div class="story-inner" id="myStoryInner">?</div>
@@ -344,7 +338,6 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
       </div>
       <span class="story-name mine">Your Story</span>
     </div>
-    <!-- Friend stories injected here -->
   </div>
 
   <div class="home-body z1">
@@ -377,7 +370,6 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
     <button class="nav-btn" onclick="gotoProfile()"><span class="nav-icon">👤</span><span class="nav-label">PROFILE</span></button>
   </div>
 
-  <!-- Add Friend Modal -->
   <div class="modal-overlay" id="addFriendModal" onclick="closeModalOut(event)">
     <div class="modal">
       <div class="modal-handle"></div>
@@ -391,7 +383,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
   </div>
 </div>
 
-<!-- ====== CHAT SCREEN ====== -->
+<!-- CHAT SCREEN -->
 <div class="screen" id="chatScreen">
   <div class="chat-topbar z1">
     <button class="back-btn" onclick="gotoHome()">←</button>
@@ -413,7 +405,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
   </div>
 </div>
 
-<!-- ====== PROFILE SCREEN ====== -->
+<!-- PROFILE SCREEN -->
 <div class="screen" id="profileScreen">
   <div class="topbar z1">
     <button class="back-btn" onclick="gotoHome()">←</button>
@@ -444,7 +436,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
   </div>
 </div>
 
-<!-- ====== STORY VIEWER ====== -->
+<!-- STORY VIEWER -->
 <div id="storyViewer">
   <div class="sv-progress" id="svProgress"></div>
   <div class="sv-topbar">
@@ -465,7 +457,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
   </div>
 </div>
 
-<!-- ====== ADD STORY MODAL ====== -->
+<!-- ADD STORY MODAL -->
 <div class="story-modal" id="addStoryModal" onclick="closeStoryModal(event)">
   <div class="sm-sheet" id="addStorySheet">
     <div class="sheet-handle"></div>
@@ -492,7 +484,7 @@ body{min-height:100vh;background:var(--bg);font-family:-apple-system,BlinkMacSys
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,updateProfile,sendPasswordResetEmail}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import{getFirestore,doc,setDoc,getDoc,addDoc,collection,query,where,getDocs,onSnapshot,orderBy,serverTimestamp,updateDoc,arrayUnion,Timestamp,deleteDoc}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import{getFirestore,doc,setDoc,getDoc,addDoc,collection,query,where,getDocs,onSnapshot,orderBy,serverTimestamp,updateDoc,arrayUnion,Timestamp,deleteDoc,writeBatch}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const cfg={
   apiKey:"AIzaSyB3D8kJBTWlau1krR0l1AygspGyK5iFXjA",
@@ -507,13 +499,14 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 let ME=null,MY_PROFILE=null,CHAT_ID=null,PEER=null,msgUnsub=null;
-let storyViewerData=[],storyViewerIdx=0,storyTimer=null,storyFillTimer=null;
-let chatListUnsub=null, reqUnsub=null;
+let storyViewerData=[],storyViewerIdx=0,storyTimer=null;
+let chatListUnsub=null,reqUnsub=null;
 
 // ========== UTILS ==========
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<5;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
 async function uniqueCode(){let code,n=0;do{code=genCode();const q=query(collection(db,'users'),where('friendCode','==',code));const s=await getDocs(q);if(s.empty)return code;n++;}while(n<20);return genCode();}
 function fmtTime(d){const now=new Date(),diff=now-d;if(diff<60000)return'now';if(diff<3600000)return Math.floor(diff/60000)+'m ago';if(diff<86400000)return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');return d.getDate()+'/'+(d.getMonth()+1);}
+function escHtml(str){const d=document.createElement('div');d.textContent=str;return d.innerHTML;}
 
 window.showToast=function(msg){
   document.querySelectorAll('.toast').forEach(t=>t.remove());
@@ -527,7 +520,10 @@ onAuthStateChanged(auth,async u=>{
   else{ME=null;MY_PROFILE=null;showAuth();}
 });
 
-async function getProfile(uid){const s=await getDoc(doc(db,'users',uid));return s.exists()?s.data():null;}
+async function getProfile(uid){
+  const s=await getDoc(doc(db,'users',uid));
+  return s.exists()?s.data():null;
+}
 
 // ========== SCREENS ==========
 function showScreen(id,anim){
@@ -544,12 +540,8 @@ function showHome(){
   document.getElementById('myStoryInner').textContent=MY_PROFILE.displayName.charAt(0).toUpperCase();
   document.getElementById('homeFriendCode').textContent=MY_PROFILE.friendCode;
   window._fc=MY_PROFILE.friendCode;
-  setupHomeListeners();
-}
-
-function setupHomeListeners(){
-  if(chatListUnsub)chatListUnsub();
-  if(reqUnsub)reqUnsub();
+  if(chatListUnsub){chatListUnsub();chatListUnsub=null;}
+  if(reqUnsub){reqUnsub();reqUnsub=null;}
   loadChats();
   loadRequests();
   loadStories();
@@ -607,7 +599,11 @@ window.doSignup=async function(){
     const c=await createUserWithEmailAndPassword(auth,email,pwd);
     await updateProfile(c.user,{displayName:name});
     const fc=await uniqueCode();
-    await setDoc(doc(db,'users',c.user.uid),{uid:c.user.uid,displayName:name,email,friendCode:fc,isOnline:true,createdAt:serverTimestamp(),friends:[],privacySettings:{screenshotNotifications:true,readReceipts:true,onlineStatus:true}});
+    await setDoc(doc(db,'users',c.user.uid),{
+      uid:c.user.uid,displayName:name,email,friendCode:fc,
+      isOnline:true,createdAt:serverTimestamp(),friends:[],
+      privacySettings:{screenshotNotifications:true,readReceipts:true,onlineStatus:true}
+    });
     MY_PROFILE={uid:c.user.uid,displayName:name,email,friendCode:fc,friends:[]};
     showHome();
   }catch(e){showErr('suErr',errMsg(e.code));}
@@ -636,17 +632,14 @@ window.doForgot=async function(){
 };
 
 window.doSignout=async function(){await signOut(auth);};
-window.copyCode=function(){
-  navigator.clipboard.writeText(window._fc||'');
-  showToast('✅ Code copied!');
-};
+window.copyCode=function(){navigator.clipboard.writeText(window._fc||'');showToast('✅ Code copied!');};
 
-// ========== FRIEND REQUESTS — FIXED ==========
+// ========== FRIEND REQUESTS ==========
 window.openAddFriend=function(){
   document.getElementById('addFriendModal').classList.add('open');
   setTimeout(()=>document.getElementById('friendCodeInput').focus(),300);
-  document.getElementById('addFriendMsg').className='hidden';
-  document.getElementById('addFriendMsg').textContent='';
+  const msg=document.getElementById('addFriendMsg');
+  msg.className='hidden';msg.textContent='';
   document.getElementById('friendCodeInput').value='';
 };
 window.closeModalOut=function(e){if(e.target.id==='addFriendModal')document.getElementById('addFriendModal').classList.remove('open');};
@@ -662,19 +655,39 @@ window.sendFriendReq=async function(){
     const snap=await getDocs(q);
     if(snap.empty){msgEl.textContent='No user found with this code.';msgEl.className='modal-msg er';return;}
     const peer=snap.docs[0].data();
-    if((MY_PROFILE.friends||[]).includes(peer.uid)){msgEl.textContent='Already friends!';msgEl.className='modal-msg er';return;}
-    const reqQ=query(collection(db,'friendRequests'),where('senderId','==',ME.uid),where('receiverId','==',peer.uid),where('status','==','pending'));
+
+    // Check already friends via chats
+    const existingChat=await findExistingChat(ME.uid,peer.uid);
+    if(existingChat){msgEl.textContent='Already friends!';msgEl.className='modal-msg er';return;}
+
+    // Check duplicate pending request
+    const reqQ=query(collection(db,'friendRequests'),
+      where('senderId','==',ME.uid),
+      where('receiverId','==',peer.uid),
+      where('status','==','pending'));
     const reqSnap=await getDocs(reqQ);
     if(!reqSnap.empty){msgEl.textContent='Request already sent!';msgEl.className='modal-msg er';return;}
-    await addDoc(collection(db,'friendRequests'),{senderId:ME.uid,senderName:MY_PROFILE.displayName,senderCode:MY_PROFILE.friendCode,receiverId:peer.uid,status:'pending',createdAt:serverTimestamp()});
+
+    await addDoc(collection(db,'friendRequests'),{
+      senderId:ME.uid,senderName:MY_PROFILE.displayName,
+      senderCode:MY_PROFILE.friendCode,receiverId:peer.uid,
+      status:'pending',createdAt:serverTimestamp()
+    });
     msgEl.textContent='✅ Request sent to '+peer.displayName+'!';
     msgEl.className='modal-msg ok';
     document.getElementById('friendCodeInput').value='';
     setTimeout(()=>document.getElementById('addFriendModal').classList.remove('open'),2200);
-  }catch(e){msgEl.textContent='Error. Try again.';msgEl.className='modal-msg er';}
+  }catch(e){console.error(e);msgEl.textContent='Error. Try again.';msgEl.className='modal-msg er';}
 };
 
-// *** FIXED: Accept/Reject with proper async handling and profile refresh ***
+async function findExistingChat(uid1,uid2){
+  const q=query(collection(db,'chats'),where('participants','array-contains',uid1));
+  const snap=await getDocs(q);
+  return snap.docs.find(d=>d.data().participants.includes(uid2))||null;
+}
+
+// *** THE FIX: Accept uses a batch write on both user docs ***
+// Firestore rules must allow this. See note below for required rules.
 function loadRequests(){
   reqUnsub=onSnapshot(
     query(collection(db,'friendRequests'),where('receiverId','==',ME.uid),where('status','==','pending')),
@@ -698,7 +711,7 @@ function loadRequests(){
             <button class="acc-btn" id="acc-${r.id}">Accept</button>
             <button class="rej-btn" id="rej-${r.id}">Reject</button>
           </div>`;
-        div.querySelector(`#acc-${r.id}`).addEventListener('click',()=>acceptReq(r.id,r.senderId,div));
+        div.querySelector(`#acc-${r.id}`).addEventListener('click',()=>acceptReq(r,div));
         div.querySelector(`#rej-${r.id}`).addEventListener('click',()=>rejectReq(r.id,div));
         list.appendChild(div);
       });
@@ -706,34 +719,85 @@ function loadRequests(){
   );
 }
 
-async function acceptReq(reqId,senderId,itemEl){
+async function acceptReq(req,itemEl){
   const btn=itemEl.querySelector('.acc-btn');
   btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
+
   try{
-    // Add each other as friends
-    await updateDoc(doc(db,'users',ME.uid),{friends:arrayUnion(senderId)});
-    await updateDoc(doc(db,'users',senderId),{friends:arrayUnion(ME.uid)});
-    // Create chat room
-    const chatRef=await addDoc(collection(db,'chats'),{
-      participants:[ME.uid,senderId],
-      createdAt:serverTimestamp(),
-      lastMessage:'',
-      lastMessageTime:serverTimestamp()
-    });
-    // Update request status
-    await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted',chatId:chatRef.id});
-    // Refresh local profile
+    // 1. Check for existing chat to avoid duplicates
+    const existing=await findExistingChat(ME.uid,req.senderId);
+    let chatId;
+
+    if(existing){
+      chatId=existing.id;
+    }else{
+      // 2. Create chat room
+      const chatRef=await addDoc(collection(db,'chats'),{
+        participants:[ME.uid,req.senderId],
+        createdAt:serverTimestamp(),
+        lastMessage:'',
+        lastMessageTime:serverTimestamp()
+      });
+      chatId=chatRef.id;
+    }
+
+    // 3. Use a batch to update BOTH user docs atomically
+    //    NOTE: Your Firestore rules must allow a user to update another user's
+    //    friends array. Recommended rule for users collection:
+    //    allow update: if request.auth != null &&
+    //      (request.auth.uid == resource.data.uid ||
+    //       (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['friends'])));
+    const batch=writeBatch(db);
+    batch.update(doc(db,'users',ME.uid),{friends:arrayUnion(req.senderId)});
+    batch.update(doc(db,'users',req.senderId),{friends:arrayUnion(ME.uid)});
+    batch.update(doc(db,'friendRequests',req.id),{status:'accepted',chatId});
+    await batch.commit();
+
+    // 4. Refresh local profile
     MY_PROFILE=await getProfile(ME.uid);
+
     showToast('🎉 Friend added!');
-    // Animate removal
     itemEl.style.transition='all 0.3s ease';
     itemEl.style.opacity='0';
     itemEl.style.transform='scale(0.9)';
     setTimeout(()=>itemEl.remove(),300);
+
   }catch(e){
     console.error('acceptReq error:',e);
-    showToast('❌ Error accepting request');
-    btn.disabled=false;btn.innerHTML='Accept';
+    // If batch fails due to rules on sender's doc, fall back to updating only our own doc
+    // This is the most common permission issue
+    if(e.code==='permission-denied'){
+      try{
+        // Fallback: only update receiver's friends list + mark request accepted
+        // The sender will see the chat appear via loadChats (participants array)
+        const existing2=await findExistingChat(ME.uid,req.senderId);
+        let chatId2=existing2?.id;
+        if(!chatId2){
+          const chatRef=await addDoc(collection(db,'chats'),{
+            participants:[ME.uid,req.senderId],
+            createdAt:serverTimestamp(),
+            lastMessage:'',
+            lastMessageTime:serverTimestamp()
+          });
+          chatId2=chatRef.id;
+        }
+        await updateDoc(doc(db,'users',ME.uid),{friends:arrayUnion(req.senderId)});
+        await updateDoc(doc(db,'friendRequests',req.id),{status:'accepted',chatId:chatId2});
+        MY_PROFILE=await getProfile(ME.uid);
+        showToast('🎉 Friend added!');
+        itemEl.style.transition='all 0.3s ease';
+        itemEl.style.opacity='0';
+        itemEl.style.transform='scale(0.9)';
+        setTimeout(()=>itemEl.remove(),300);
+      }catch(e2){
+        console.error('Fallback failed:',e2);
+        showToast('❌ Error: check Firestore rules');
+        btn.disabled=false;btn.innerHTML='Accept';
+      }
+    }else{
+      showToast('❌ Error accepting request');
+      btn.disabled=false;btn.innerHTML='Accept';
+    }
   }
 }
 
@@ -752,14 +816,21 @@ async function rejectReq(reqId,itemEl){
   }
 }
 
-function escHtml(str){const d=document.createElement('div');d.textContent=str;return d.innerHTML;}
-
 // ========== CHATS ==========
+// FIXED: loadChats uses participants array (no friends array dependency)
+// This means chats appear for BOTH users as soon as the chat doc is created
 function loadChats(){
-  const q=query(collection(db,'chats'),where('participants','array-contains',ME.uid),orderBy('lastMessageTime','desc'));
+  const q=query(
+    collection(db,'chats'),
+    where('participants','array-contains',ME.uid),
+    orderBy('lastMessageTime','desc')
+  );
   chatListUnsub=onSnapshot(q,async snap=>{
     const list=document.getElementById('chatList');
-    if(snap.empty){list.innerHTML='<div class="empty">💬 No chats yet<br><span style="font-size:10px">Add a friend using their 5-digit code</span></div>';return;}
+    if(snap.empty){
+      list.innerHTML='<div class="empty">💬 No chats yet<br><span style="font-size:10px">Add a friend using their 5-digit code</span></div>';
+      return;
+    }
     list.innerHTML='';
     for(const d of snap.docs){
       const chat=d.data();
@@ -816,7 +887,10 @@ window.sendMsg=async function(){
   if(!text||!CHAT_ID)return;
   input.value='';input.style.height='';
   try{
-    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{text,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false});
+    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{
+      text,senderId:ME.uid,senderName:MY_PROFILE.displayName,
+      createdAt:serverTimestamp(),deleted:false
+    });
     await updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:text,lastMessageTime:serverTimestamp()});
   }catch(e){console.error(e);}
 };
@@ -830,16 +904,16 @@ window.showCtx=function(e,msgId,isMe){
   if(ctxMenu)ctxMenu.remove();
   const menu=document.createElement('div');
   menu.className='msg-ctx-menu';
-  const rect={top:e.clientY-90,left:Math.min(e.clientX,window.innerWidth-165)};
-  menu.style.top=rect.top+'px';menu.style.left=rect.left+'px';
+  menu.style.top=Math.max(10,e.clientY-90)+'px';
+  menu.style.left=Math.min(e.clientX,window.innerWidth-165)+'px';
   menu.innerHTML=`
     <div class="ctx-item" data-action="dme">🗑 Delete for me</div>
     ${isMe?`<div class="ctx-item danger" data-action="dboth">🚫 Delete for everyone</div>`:''}
     <div class="ctx-item" data-action="cancel">✕ Cancel</div>`;
   menu.addEventListener('click',async ev=>{
     const a=ev.target.closest('[data-action]')?.dataset.action;
-    if(a==='dme'){await updateDoc(doc(db,'chats',CHAT_ID,'messages',msgId),{deletedFor:arrayUnion(ME.uid)});}
-    else if(a==='dboth'){await updateDoc(doc(db,'chats',CHAT_ID,'messages',msgId),{deleted:true,text:'This message was deleted'});}
+    if(a==='dme')await updateDoc(doc(db,'chats',CHAT_ID,'messages',msgId),{deletedFor:arrayUnion(ME.uid)});
+    else if(a==='dboth')await updateDoc(doc(db,'chats',CHAT_ID,'messages',msgId),{deleted:true,text:'This message was deleted'});
     menu.remove();ctxMenu=null;
   });
   document.body.appendChild(menu);ctxMenu=menu;
@@ -849,13 +923,9 @@ window.showCtx=function(e,msgId,isMe){
 // ========== STORIES ==========
 async function loadStories(){
   const bar=document.getElementById('storiesBar');
-  // remove old friend story nodes (keep myStoryBtn)
   bar.querySelectorAll('.friend-story-item').forEach(n=>n.remove());
-
   const friends=MY_PROFILE.friends||[];
   if(!friends.length)return;
-
-  // load stories from last 24h
   const cutoff=new Date(Date.now()-24*60*60*1000);
   for(const fid of friends){
     const peer=await getProfile(fid);
@@ -893,18 +963,13 @@ window.handleImageStory=async function(e){
   reader.onload=async ev=>{
     try{
       await addDoc(collection(db,'stories'),{
-        authorId:ME.uid,
-        authorName:MY_PROFILE.displayName,
-        type:'image',
-        content:ev.target.result,
-        createdAt:serverTimestamp()
+        authorId:ME.uid,authorName:MY_PROFILE.displayName,
+        type:'image',content:ev.target.result,createdAt:serverTimestamp()
       });
-      showToast('✅ Story posted!');
-      loadStories();
+      showToast('✅ Story posted!');loadStories();
     }catch(err){showToast('❌ Error posting story');}
   };
-  reader.readAsDataURL(file);
-  e.target.value='';
+  reader.readAsDataURL(file);e.target.value='';
 };
 
 window.postTextStory=async function(){
@@ -914,37 +979,27 @@ window.postTextStory=async function(){
   btn.disabled=true;btn.innerHTML='<span class="spin"></span>Sharing...';
   try{
     await addDoc(collection(db,'stories'),{
-      authorId:ME.uid,
-      authorName:MY_PROFILE.displayName,
-      type:'text',
-      content:text,
-      createdAt:serverTimestamp()
+      authorId:ME.uid,authorName:MY_PROFILE.displayName,
+      type:'text',content:text,createdAt:serverTimestamp()
     });
     document.getElementById('addStoryModal').classList.remove('open');
-    showToast('✅ Story posted!');
-    loadStories();
+    showToast('✅ Story posted!');loadStories();
   }catch(err){showToast('❌ Error posting story');}
   finally{btn.disabled=false;btn.innerHTML='Share Story ✨';}
 };
 
-// === STORY VIEWER ===
 function openStoryViewer(stories,peer){
-  storyViewerData=stories;
-  storyViewerIdx=0;
+  storyViewerData=stories;storyViewerIdx=0;
   const v=document.getElementById('storyViewer');
-  v.style.display='flex';
-  v.style.animation='sfr 0.3s cubic-bezier(0.16,1,0.3,1) forwards';
+  v.style.display='flex';v.style.animation='sfr 0.3s cubic-bezier(0.16,1,0.3,1) forwards';
   document.getElementById('svAvatar').textContent=peer.displayName.charAt(0).toUpperCase();
   renderStory();
 }
-
 function renderStory(){
   if(!storyViewerData.length)return;
-  clearInterval(storyTimer);
+  clearTimeout(storyTimer);
   const story=storyViewerData[storyViewerIdx];
   const total=storyViewerData.length;
-
-  // Progress bars
   const prog=document.getElementById('svProgress');
   prog.innerHTML='';
   for(let i=0;i<total;i++){
@@ -953,42 +1008,26 @@ function renderStory(){
     if(i<storyViewerIdx)fill.style.width='100%';
     seg.appendChild(fill);prog.appendChild(seg);
   }
-
-  // Animate current
-  const fills=prog.querySelectorAll('.sv-fill');
   setTimeout(()=>{
-    fills[storyViewerIdx].style.transition=`width ${5}s linear`;
+    const fills=prog.querySelectorAll('.sv-fill');
+    fills[storyViewerIdx].style.transition='width 5s linear';
     fills[storyViewerIdx].style.width='100%';
   },50);
-
-  // Header
   document.getElementById('svName').textContent=story.authorName;
   document.getElementById('svTime').textContent=story.createdAt?.toDate?fmtTime(story.createdAt.toDate()):'now';
-
-  // Content
   const media=document.getElementById('svMedia');
   const bg=document.getElementById('svBg');
   if(story.type==='image'){
     media.innerHTML=`<img src="${story.content}" class="sv-media" style="max-height:calc(100vh - 200px)">`;
-    bg.style.backgroundImage=`url(${story.content})`;
-    bg.style.background='';
+    bg.style.backgroundImage=`url(${story.content})`;bg.style.background='';
   }else{
     media.innerHTML=`<div class="sv-text-story">${escHtml(story.content)}</div>`;
-    bg.style.backgroundImage='';
-    bg.style.background='linear-gradient(135deg,rgba(201,116,138,0.4),rgba(155,127,212,0.4))';
+    bg.style.backgroundImage='';bg.style.background='linear-gradient(135deg,rgba(201,116,138,0.4),rgba(155,127,212,0.4))';
   }
-
-  // Auto advance
   storyTimer=setTimeout(()=>nextStory(),5000);
 }
-
-window.nextStory=function(){
-  if(storyViewerIdx<storyViewerData.length-1){storyViewerIdx++;renderStory();}
-  else closeStoryViewer();
-};
-window.prevStory=function(){
-  if(storyViewerIdx>0){storyViewerIdx--;renderStory();}
-};
+window.nextStory=function(){if(storyViewerIdx<storyViewerData.length-1){storyViewerIdx++;renderStory();}else closeStoryViewer();};
+window.prevStory=function(){if(storyViewerIdx>0){storyViewerIdx--;renderStory();}};
 window.closeStoryViewer=function(){
   clearTimeout(storyTimer);
   const v=document.getElementById('storyViewer');
@@ -997,13 +1036,11 @@ window.closeStoryViewer=function(){
 };
 window.heartStory=function(){
   const btn=document.querySelector('.sv-heart');
-  btn.textContent='❤️';
-  btn.style.transform='scale(1.4)';
+  btn.textContent='❤️';btn.style.transform='scale(1.4)';
   setTimeout(()=>{btn.style.transform='scale(1)';btn.textContent='🤍';},800);
   showToast('❤️ Reacted!');
 };
 
-// ========== KEYBOARD ==========
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   if(document.getElementById('authScreen').classList.contains('active')){
@@ -1012,5 +1049,56 @@ document.addEventListener('keydown',e=>{
   }
 });
 </script>
+
+<!--
+=============================================================
+IMPORTANT: UPDATE YOUR FIRESTORE SECURITY RULES
+=============================================================
+Go to Firebase Console → Firestore → Rules and paste this:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth.uid == userId;
+      // Allow updating own doc, OR allow another auth'd user to ONLY modify friends array
+      allow update: if request.auth != null && (
+        request.auth.uid == userId ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['friends'])
+      );
+    }
+
+    match /chats/{chatId} {
+      allow read, write: if request.auth != null &&
+        request.auth.uid in resource.data.participants;
+      allow create: if request.auth != null;
+      match /messages/{msgId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+
+    match /friendRequests/{reqId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == resource.data.senderId ||
+        request.auth.uid == resource.data.receiverId
+      );
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.senderId ||
+        request.auth.uid == resource.data.receiverId
+      );
+    }
+
+    match /stories/{storyId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == resource.data.authorId;
+      allow create: if request.auth != null;
+    }
+  }
+}
+=============================================================
+-->
 </body>
 </html>
