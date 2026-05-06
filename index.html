@@ -215,7 +215,10 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .bubble.deleted{font-style:italic;opacity:0.35;font-size:12px;}
 .bubble.system-msg{background:rgba(255,255,255,0.03);color:var(--muted);font-size:11px;font-style:italic;text-align:center;border-radius:10px;max-width:100%;}
 .msg-time{font-size:9px;color:var(--dim);margin-bottom:4px;white-space:nowrap;}
-.msg-status{font-size:9px;color:rgba(255,255,255,0.45);margin-top:2px;text-align:right;}
+.msg-status{font-size:11px;margin-top:3px;text-align:right;line-height:1;}
+.tick-sent{color:rgba(255,255,255,0.5);}
+.tick-delivered{color:rgba(255,255,255,0.75);}
+.tick-seen{color:#60CDFF;}
 .dot{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s ease-in-out infinite;}
 .dot:nth-child(2){animation-delay:0.2s;}
 .dot:nth-child(3){animation-delay:0.4s;}
@@ -277,6 +280,35 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 /* ── SECTION LABEL ── */
 .section-label{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin:14px 0 9px;}
 
+/* ── 3-TAB CHAT SUB TABS ── */
+.chat-sub-tabs{display:flex;margin:10px 14px 0;background:rgba(6,6,12,0.8);border:1px solid rgba(255,255,255,0.04);border-radius:11px;padding:3px;gap:3px;}
+.chat-sub-tab{flex:1;padding:8px 6px;text-align:center;border-radius:8px;font-size:11.5px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:transparent;font-family:inherit;transition:all 0.2s;white-space:nowrap;letter-spacing:0.1px;}
+.chat-sub-tab.on{color:#E8A0B0;border:1px solid rgba(201,116,138,0.28);background:linear-gradient(135deg,rgba(201,116,138,0.1),rgba(155,127,212,0.07));}
+.chat-sub-tab:active{transform:scale(0.94);}
+
+/* ── CHAT CONVERSATION ITEM (My Chats tab) ── */
+.chat-conv-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;cursor:pointer;transition:all 0.18s;margin-bottom:2px;position:relative;}
+.chat-conv-item:hover{background:rgba(255,255,255,0.04);}
+.chat-conv-item:active{transform:scale(0.98);background:rgba(201,116,138,0.06);}
+.chat-conv-item.unread{background:rgba(201,116,138,0.05);}
+.chat-conv-item.unread:hover{background:rgba(201,116,138,0.09);}
+.conv-avatar{width:52px;height:52px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:#fff;flex-shrink:0;position:relative;}
+.conv-online-dot{position:absolute;bottom:2px;right:2px;width:13px;height:13px;border-radius:50%;border:2.5px solid var(--bg);}
+.conv-info{flex:1;min-width:0;}
+.conv-name{font-size:14.5px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.conv-name.unread{font-weight:700;}
+.conv-preview{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.conv-preview.unread{color:var(--text);font-weight:500;}
+.conv-meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.conv-time{font-size:10.5px;color:var(--muted);}
+.conv-time.unread{color:var(--rose);font-weight:600;}
+.conv-badge{min-width:20px;height:20px;background:var(--grad);border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;padding:0 6px;}
+
+/* ── FRIENDS LIST ITEM (Friends tab) ── */
+.friend-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:14px;cursor:pointer;transition:all 0.18s;margin-bottom:4px;}
+.friend-item:hover{background:rgba(255,255,255,0.04);}
+.friend-item:active{transform:scale(0.97);background:rgba(201,116,138,0.06);}
+
 /* ── NOTIFICATION TOAST ── */
 .notif{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1C1C28;border:1px solid rgba(201,116,138,0.28);border-radius:20px;padding:9px 18px;font-size:12.5px;color:#E8A0B0;z-index:1000;animation:notifIn 0.3s cubic-bezier(0.34,1.56,0.64,1);max-width:300px;text-align:center;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,0.4);}
 @keyframes notifIn{from{opacity:0;transform:translateX(-50%) translateY(-14px) scale(0.92)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
@@ -293,6 +325,28 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .unread-count{min-width:18px;height:18px;background:var(--grad);border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;padding:0 5px;}
 
 .empty{text-align:center;padding:38px 20px;color:var(--dim);font-size:13px;line-height:2.1;}
+
+/* ── SETTINGS SHEET ── */
+.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;opacity:0;transition:opacity 0.3s;pointer-events:none;backdrop-filter:blur(6px);}
+.settings-overlay.open{opacity:1;pointer-events:all;}
+.settings-sheet{position:fixed;bottom:0;left:0;right:0;background:#0E0E18;border-top:1px solid rgba(255,255,255,0.08);border-radius:26px 26px 0 0;z-index:501;transform:translateY(100%);transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);max-height:85vh;overflow-y:auto;padding-bottom:40px;}
+.settings-sheet.open{transform:translateY(0);}
+.settings-sheet::before{content:'';display:block;width:40px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:12px auto 0;}
+.settings-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;}
+.settings-title{font-size:17px;font-weight:700;color:var(--text);}
+.settings-close{background:rgba(255,255,255,0.07);border:none;color:var(--muted);cursor:pointer;width:30px;height:30px;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.18s;}
+.settings-close:hover{background:rgba(255,255,255,0.12);color:var(--text);}
+.settings-section{margin:6px 16px 0;}
+.settings-section-title{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);padding:12px 4px 6px;}
+.settings-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row-left{display:flex;align-items:center;gap:12px;}
+.settings-row-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.settings-row-label{font-size:14px;color:var(--text);}
+.settings-row-sublabel{font-size:11px;color:var(--muted);margin-top:1px;}
+.settings-danger-btn{width:100%;margin:12px 16px 0;padding:14px;background:rgba(224,112,112,0.07);border:1px solid rgba(224,112,112,0.2);border-radius:14px;color:var(--danger);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;box-sizing:border-box;}
+.settings-danger-btn:hover{background:rgba(224,112,112,0.13);}
 </style>
 </head>
 <body>
@@ -377,17 +431,18 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
   </div>
 </div>
 
-<!-- ══════════ CHAT SCREEN (Friends + Requests) ══════════ -->
+<!-- ══════════ CHAT SCREEN — 3 tabs ══════════ -->
 <div class="screen" id="chatScreen">
   <div class="chat-topbar z1">
     <span class="chat-topbar-title">COVA</span>
   </div>
   <div class="chat-sub-tabs z1">
-    <button class="chat-sub-tab on" onclick="switchChatSubTab('friends')" id="stFriends">My Friends</button>
-    <button class="chat-sub-tab" onclick="switchChatSubTab('requests')" id="stRequests">Friend Requests <span class="req-count hidden" id="reqCount">0</span></button>
+    <button class="chat-sub-tab on" onclick="switchChatSubTab('friends')" id="stFriends">Friends</button>
+    <button class="chat-sub-tab"    onclick="switchChatSubTab('chats')"   id="stChats">My Chats <span class="req-count hidden" id="chatUnreadBadge"></span></button>
+    <button class="chat-sub-tab"    onclick="switchChatSubTab('requests')" id="stRequests">Requests <span class="req-count hidden" id="reqCount">0</span></button>
   </div>
 
-  <!-- My Friends tab -->
+  <!-- FRIENDS tab — people you added, tap to start chat -->
   <div class="chat-tab-body" id="tabFriends">
     <div class="section-label">Add someone new</div>
     <div class="add-friend-bar">
@@ -399,7 +454,12 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
     <div id="friendsList"><div class="empty">No friends yet 💫<br><span style="font-size:11px">Add someone using their 5-digit code above</span></div></div>
   </div>
 
-  <!-- Requests tab -->
+  <!-- MY CHATS tab — conversations with unread indicators -->
+  <div class="chat-tab-body hidden" id="tabChats">
+    <div id="chatsList"><div class="empty">No chats yet 💬<br><span style="font-size:11px">Go to Friends and tap someone to start chatting</span></div></div>
+  </div>
+
+  <!-- REQUESTS tab -->
   <div class="chat-tab-body hidden" id="tabRequests">
     <div id="reqNotifyBar" class="req-notify-bar hidden">🔔 You have new friend requests!</div>
     <div id="requestsList"><div class="empty">No pending requests 🌸</div></div>
@@ -450,9 +510,9 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 <div class="screen" id="myProfileScreen">
   <div class="insta-topbar z1">
     <span class="insta-username">My Profile</span>
-    <button class="insta-icon-btn" onclick="showNotif('Settings coming soon!')">⚙️</button>
+    <button class="insta-icon-btn" onclick="openSettings()">⚙️</button>
   </div>
-  <div style="flex:1;overflow-y:auto;" class="z1">
+  <div style="flex:1;overflow-y:auto;padding-bottom:80px;" class="z1">
     <div class="insta-profile-header">
       <div class="insta-profile-top">
         <div class="insta-avatar-wrap">
@@ -475,40 +535,116 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
           <button onclick="copyCode()" style="background:none;border:none;color:#C9748A;cursor:pointer;font-size:12px;">copy</button>
         </div>
       </div>
-
       <div class="insta-actions" style="margin-top:14px;">
         <button class="insta-btn insta-btn-secondary" onclick="editProfile()">✏️ Edit</button>
         <button class="insta-btn insta-btn-danger" onclick="doSignout()">Sign Out</button>
       </div>
     </div>
-
-    <!-- Privacy Settings -->
-    <div style="margin:0 16px 16px;">
-      <div class="section-label">Privacy Settings</div>
-      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);">
-          <span style="font-size:14px;color:#A09AB0;">📸 Screenshot alerts</span>
-          <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid rgba(255,255,255,0.04);">
-          <span style="font-size:13.5px;color:#A09AB0;">✓ Read receipts</span>
-          <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;">
-          <span style="font-size:13.5px;color:#A09AB0;">🟢 Online status</span>
-          <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div>
-        </div>
-      </div>
-    </div>
-
-    <div style="height:28px"></div>
   </div>
 
+  <!-- Bottom nav — fixed at bottom like other screens -->
   <div class="bottom-nav z1">
     <button class="nav-btn" onclick="navTo('home')"><span class="nav-icon">🏠</span><span class="nav-label">HOME</span></button>
     <button class="nav-btn" onclick="navTo('chat')"><span class="nav-icon">💬</span><span class="nav-label">CHATS</span></button>
     <button class="nav-btn on" onclick="navTo('profile')"><span class="nav-icon">👤</span><span class="nav-label">PROFILE</span></button>
   </div>
+</div>
+
+<!-- ══════════ SETTINGS SHEET ══════════ -->
+<div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()"></div>
+<div class="settings-sheet" id="settingsSheet">
+  <div class="settings-header">
+    <span class="settings-title">Settings</span>
+    <button class="settings-close" onclick="closeSettings()">✕</button>
+  </div>
+
+  <!-- Account -->
+  <div class="settings-section">
+    <div class="settings-section-title">Account</div>
+    <div class="settings-card">
+      <div class="settings-row" onclick="editProfile()" style="cursor:pointer;">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" style="background:rgba(201,116,138,0.12);">✏️</div>
+          <div><div class="settings-row-label">Edit Profile</div><div class="settings-row-sublabel">Name, bio and photo</div></div>
+        </div>
+        <span style="color:var(--muted);font-size:14px;">›</span>
+      </div>
+      <div class="settings-row" onclick="copyCode()" style="cursor:pointer;">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" style="background:rgba(155,127,212,0.12);">🔑</div>
+          <div><div class="settings-row-label">My Friend Code</div><div class="settings-row-sublabel" id="settingsFriendCode">—</div></div>
+        </div>
+        <span style="color:var(--rose);font-size:12px;font-weight:600;">Copy</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy -->
+  <div class="settings-section">
+    <div class="settings-section-title">Privacy</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" style="background:rgba(201,116,138,0.12);">📸</div>
+          <div><div class="settings-row-label">Screenshot Alerts</div><div class="settings-row-sublabel">Notify when someone screenshots</div></div>
+        </div>
+        <div class="toggle-track on" id="toggleScreenshot" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" style="background:rgba(155,127,212,0.12);">✓</div>
+          <div><div class="settings-row-label">Read Receipts</div><div class="settings-row-sublabel">Show when you've read messages</div></div>
+        </div>
+        <div class="toggle-track on" id="toggleReadReceipts" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" style="background:rgba(110,201,160,0.12);">🟢</div>
+          <div><div class="settings-row-label">Online Status</div><div class="settings-row-sublabel">Let friends see when you're active</div></div>
+        </div>
+        <div class="toggle-track on" id="toggleOnlineStatus" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="settings-section">
+    <div class="settings-section-title">Notifications</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" style="background:rgba(201,116,138,0.12);">🔔</div>
+          <div><div class="settings-row-label">Message Notifications</div><div class="settings-row-sublabel">Popup when new message arrives</div></div>
+        </div>
+        <div class="toggle-track on" id="toggleMsgNotif" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" style="background:rgba(155,127,212,0.12);">📳</div>
+          <div><div class="settings-row-label">Vibration</div><div class="settings-row-sublabel">Vibrate on new messages</div></div>
+        </div>
+        <div class="toggle-track on" id="toggleVibrate" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="settings-section">
+    <div class="settings-section-title">About</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" style="background:rgba(201,116,138,0.12);">💜</div>
+          <div><div class="settings-row-label">COVA</div><div class="settings-row-sublabel">Built with privacy, designed with love</div></div>
+        </div>
+        <span style="color:var(--muted);font-size:11px;">v1.0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sign out -->
+  <button class="settings-danger-btn" style="width:calc(100% - 32px);" onclick="closeSettings();doSignout();">Sign Out</button>
+  <div style="height:20px;"></div>
 </div>
 
 <script type="module">
@@ -621,7 +757,7 @@ function showScreen(id,dir){
 
 window.navTo=function(page){
   if(page==='home'){showScreen('profileHomeScreen');loadHomeProfile();}
-  else if(page==='chat'){showScreen('chatScreen');loadFriends();loadRequests();}
+  else if(page==='chat'){showScreen('chatScreen');loadFriends();loadRequests();loadChats();}
   else if(page==='profile'){showScreen('myProfileScreen');loadMyProfile();}
 };
 
@@ -728,11 +864,12 @@ function renderGrid(){
 
 
 window.switchChatSubTab=function(tab){
-  document.getElementById('tabFriends').classList.toggle('hidden',tab!=='friends');
-  document.getElementById('tabRequests').classList.toggle('hidden',tab!=='requests');
-  document.getElementById('stFriends').classList.toggle('on',tab==='friends');
-  document.getElementById('stRequests').classList.toggle('on',tab==='requests');
-  if(tab==='requests')loadRequests();
+  ['friends','chats','requests'].forEach(t=>{
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1))?.classList.toggle('hidden',t!==tab);
+    document.getElementById('st'+t.charAt(0).toUpperCase()+t.slice(1))?.classList.toggle('on',t===tab);
+  });
+  if(tab==='requests') loadRequests();
+  else if(tab==='chats') loadChats();
   else loadFriends();
 };
 
@@ -795,6 +932,161 @@ async function loadFriends(){
   });
 }
 
+// ── MY CHATS — real-time conversation list ──
+let chatsUnsub=null;
+async function loadChats(){
+  const list=document.getElementById('chatsList');
+  if(!list)return;
+  if(chatsUnsub){chatsUnsub();chatsUnsub=null;}
+
+  list.innerHTML=`<div style="text-align:center;padding:20px;color:#9B7FD4;font-size:13px;"><span class="spin"></span> Loading chats...</div>`;
+
+  try{
+    const q=query(collection(db,'chats'),where('participants','array-contains',ME.uid),orderBy('lastMessageTime','desc'));
+    chatsUnsub=onSnapshot(q,async snap=>{
+      if(snap.empty){
+        list.innerHTML='<div class="empty">No chats yet 💬<br><span style="font-size:11px">Go to Friends and tap someone to start chatting</span></div>';
+        return;
+      }
+      // Fetch all peer profiles in parallel
+      const chatDocs=snap.docs.map(d=>({id:d.id,...d.data()}));
+      const peerIds=[...new Set(chatDocs.flatMap(c=>c.participants.filter(id=>id!==ME.uid)))];
+      const peerMap={};
+      await Promise.all(peerIds.map(async pid=>{
+        const p=await getProfile(pid).catch(()=>null);
+        if(p)peerMap[pid]=p;
+      }));
+
+      list.innerHTML='';
+      // Count total unread chats for badge
+      let totalUnreadChats=0;
+
+      chatDocs.forEach(chat=>{
+        const peerId=chat.participants.find(id=>id!==ME.uid);
+        const peer=peerMap[peerId];
+        if(!peer)return;
+
+        const unread=(unreadCounts[chat.id]||0);
+        if(unread>0)totalUnreadChats++;
+        const isUnread=unread>0;
+        const lastSeen=lastSeenTimes[chat.id]||0;
+        const lastMsgTime=chat.lastMessageTime?.toMillis?.()|| 0;
+        const hasNewMsg=lastMsgTime>lastSeen && chat.lastMessage && !chat.lastMessage.startsWith('[deleted]');
+
+        const initial=(peer.displayName||'?').charAt(0).toUpperCase();
+        const avatarHtml=peer.photoURL
+          ?`<img src="${peer.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+          :initial;
+        const timeStr=chat.lastMessageTime?.toDate?fmtTime(chat.lastMessageTime.toDate()):'';
+        const preview=chat.lastMessage||'Tap to chat';
+        const displayUnread=isUnread?unread:(hasNewMsg?'•':'');
+
+        const el=document.createElement('div');
+        el.className='chat-conv-item'+(isUnread||hasNewMsg?' unread':'');
+        el.dataset.chatId=chat.id;
+        el.innerHTML=`
+          <div class="conv-avatar">
+            ${avatarHtml}
+            <div class="conv-online-dot" style="background:${peer.isOnline?'#6EC9A0':'#555570'};"></div>
+          </div>
+          <div class="conv-info">
+            <div class="conv-name${isUnread||hasNewMsg?' unread':''}">${peer.displayName||'Unknown'}</div>
+            <div class="conv-preview${isUnread||hasNewMsg?' unread':''}">${escHtml(preview)}</div>
+          </div>
+          <div class="conv-meta">
+            <span class="conv-time${isUnread||hasNewMsg?' unread':''}">${timeStr}</span>
+            ${displayUnread?`<span class="conv-badge">${displayUnread}</span>`:''}
+          </div>`;
+
+        // Tap to open chat
+        el.onclick=async()=>{
+          unreadCounts[chat.id]=0;
+          lastSeenTimes[chat.id]=Date.now();
+          updateChatBadge();
+          el.classList.remove('unread');
+          el.querySelector('.conv-name')?.classList.remove('unread');
+          el.querySelector('.conv-preview')?.classList.remove('unread');
+          el.querySelector('.conv-time')?.classList.remove('unread');
+          el.querySelector('.conv-badge')?.remove();
+          const chatId=await getOrCreateChat(peerId).catch(()=>chat.id);
+          openDirectChat(peer,chatId);
+        };
+
+        // Long press / right click to delete conversation
+        attachChatHold(el,chat.id,peer.displayName);
+        list.appendChild(el);
+      });
+
+      // Update My Chats tab badge
+      const chatUnreadBadge=document.getElementById('chatUnreadBadge');
+      if(chatUnreadBadge){
+        if(totalUnreadChats>0){chatUnreadBadge.textContent=totalUnreadChats;chatUnreadBadge.classList.remove('hidden');}
+        else chatUnreadBadge.classList.add('hidden');
+      }
+    });
+  }catch(e){
+    console.error('loadChats error:',e);
+    list.innerHTML='<div class="empty">Could not load chats.</div>';
+  }
+}
+
+// Long press / right click on a chat conversation item to delete it
+let _chatLpTimer=null;
+function attachChatHold(el,chatId,peerName){
+  const trigger=(clientX,clientY)=>{
+    const fakeEvt={clientX,clientY,preventDefault:()=>{}};
+    showChatCtx(fakeEvt,chatId,peerName);
+  };
+  el.addEventListener('contextmenu',e=>{e.preventDefault();trigger(e.clientX,e.clientY);});
+  el.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    _chatLpTimer=setTimeout(()=>trigger(t.clientX,t.clientY),500);
+  },{passive:true});
+  el.addEventListener('touchend',()=>clearTimeout(_chatLpTimer),{passive:true});
+  el.addEventListener('touchmove',()=>clearTimeout(_chatLpTimer),{passive:true});
+}
+
+let chatCtxMenu=null;
+function showChatCtx(e,chatId,peerName){
+  if(chatCtxMenu){chatCtxMenu.remove();chatCtxMenu=null;}
+  const menu=document.createElement('div');
+  menu.className='ctx-menu';
+  const x=Math.min(e.clientX,window.innerWidth-180);
+  const y=Math.max(e.clientY-10,60);
+  menu.style.top=y+'px';menu.style.left=x+'px';
+  menu.innerHTML=`
+    <div style="padding:8px 14px 6px;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0.5px;">Chat with ${peerName||'this person'}</div>
+    <div class="ctx-item danger" onclick="deleteConversation('${chatId}')">🗑️ Delete conversation</div>
+    <div class="ctx-item" style="color:var(--muted);border-top:1px solid var(--border);margin-top:4px;padding-top:8px;" onclick="closeChatCtx()">✕ Cancel</div>`;
+  document.body.appendChild(menu);chatCtxMenu=menu;
+  setTimeout(()=>{
+    document.addEventListener('click',closeChatCtx,{once:true});
+    document.addEventListener('touchstart',closeChatCtx,{once:true,passive:true});
+  },80);
+}
+window.closeChatCtx=function(){if(chatCtxMenu){chatCtxMenu.remove();chatCtxMenu=null;}};
+
+window.deleteConversation=async function(chatId){
+  closeChatCtx();
+  if(!confirm('Delete this conversation? Messages will be removed for you only.'))return;
+  try{
+    // Get all messages and mark deleted for me
+    const msgsSnap=await getDocs(collection(db,'chats',chatId,'messages'));
+    const batch=[];
+    msgsSnap.docs.forEach(d=>{
+      batch.push(updateDoc(doc(db,'chats',chatId,'messages',d.id),{deletedFor:arrayUnion(ME.uid)}));
+    });
+    await Promise.all(batch);
+    delete unreadCounts[chatId];
+    delete lastSeenTimes[chatId];
+    updateChatBadge();
+    showNotif('Conversation deleted ✅');
+  }catch(e){
+    console.error('deleteConversation error:',e);
+    showNotif('Could not delete: '+e.message);
+  }
+};
+
 async function getOrCreateChat(peerId){
   try{
     const q=query(collection(db,'chats'),where('participants','array-contains',ME.uid));
@@ -837,6 +1129,8 @@ function openDirectChat(peer,chatId){
   if(statusEl){statusEl.textContent=peer.isOnline?'Online':'Offline';statusEl.style.color=peer.isOnline?'#6EC9A0':'#7A7090';}
   document.getElementById('attachRow').classList.remove('open');
   loadMessages(chatId);
+  // Refresh chats list in background to update read state
+  setTimeout(()=>loadChats(),800);
 }
 
 function loadRequests(){
@@ -966,8 +1260,25 @@ function attachHoldAndRightClick(el,msgId,isMe){
   el.addEventListener('touchmove',()=>clearTimeout(_lpTimer),{passive:true});
 }
 
+function getTickHtml(m,isMe){
+  if(!isMe)return '';
+  const peerId=PEER?.uid||'';
+  if(m.seenBy && m.seenBy.includes(peerId)){
+    // Blue double tick — seen
+    return '<span class="msg-status tick-seen">✓✓</span>';
+  } else if(m.deliveredTo && m.deliveredTo.includes(peerId)){
+    // White double tick — delivered
+    return '<span class="msg-status tick-delivered">✓✓</span>';
+  } else {
+    // Single grey tick — sent but not yet delivered
+    return '<span class="msg-status tick-sent">✓</span>';
+  }
+}
+
 function loadMessages(chatId){
   if(msgUnsub)msgUnsub();
+  // Mark all messages in this chat as delivered + seen for the receiver
+  markMessagesSeenAndDelivered(chatId);
   const q=query(collection(db,'chats',chatId,'messages'),orderBy('createdAt','asc'));
   msgUnsub=onSnapshot(q,snap=>{
     const list=document.getElementById('msgList');
@@ -987,38 +1298,42 @@ function loadMessages(chatId){
         row.innerHTML=`<div class="bubble ${isMe?'me':'them'} deleted">🚫 This message was deleted</div>`;
 
       } else if(m.type==='image'){
-        const wrap=document.createElement('div');
-        wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start');
-        wrap.innerHTML=`<div class="img-bubble" style="cursor:pointer;user-select:none;-webkit-user-select:none;"><img src="${m.url}" loading="lazy"></div><div class="msg-time">${t}</div>`;
-        const imgBubble=wrap.querySelector('.img-bubble');
+        const imgBubble=document.createElement('div');
+        imgBubble.className='img-bubble';
+        imgBubble.style.cssText='cursor:pointer;user-select:none;-webkit-user-select:none;';
+        imgBubble.innerHTML=`<img src="${m.url}" loading="lazy">`;
         attachHoldAndRightClick(imgBubble,d.id,isMe);
-        row.appendChild(wrap);
+        row.appendChild(imgBubble);
+        row.insertAdjacentHTML('beforeend',`<div class="msg-time">${t}</div>${isMe?getTickHtml(m,isMe):''}`)  ;
 
       } else if(m.type==='voice'){
         const bars=Array.from({length:10},()=>`<div class="voice-bar" style="height:${4+Math.random()*12}px"></div>`).join('');
-        const wrap=document.createElement('div');
-        wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start');
-        wrap.innerHTML=`<div class="voice-bubble ${isMe?'me':'them'}" style="user-select:none;-webkit-user-select:none;"><button class="voice-play" onclick="playVoice('${m.url}',this)">▶</button><div class="voice-wave">${bars}</div><span class="voice-dur">${fmtDur(m.duration||0)}</span></div><div class="msg-time">${t}</div>`;
-        const vBubble=wrap.querySelector('.voice-bubble');
+        const vBubble=document.createElement('div');
+        vBubble.className=`voice-bubble ${isMe?'me':'them'}`;
+        vBubble.style.cssText='user-select:none;-webkit-user-select:none;';
+        vBubble.innerHTML=`<button class="voice-play" onclick="playVoice('${m.url}',this)">▶</button><div class="voice-wave">${bars}</div><span class="voice-dur">${fmtDur(m.duration||0)}</span>`;
         attachHoldAndRightClick(vBubble,d.id,isMe);
-        row.appendChild(wrap);
+        row.appendChild(vBubble);
+        row.insertAdjacentHTML('beforeend',`<div class="msg-time">${t}</div>${isMe?getTickHtml(m,isMe):''}`)  ;
 
       } else if(m.type==='file'){
-        const wrap=document.createElement('div');
-        wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start');
-        wrap.innerHTML=`<div class="file-bubble ${isMe?'me':'them'}" style="user-select:none;-webkit-user-select:none;"><span style="font-size:22px">📄</span><div><div class="file-name">${m.fileName}</div><div class="file-size">${m.fileSize}</div></div><a href="${m.url}" download="${m.fileName}" style="color:#fff;font-size:18px;text-decoration:none" onclick="event.stopPropagation()">⬇</a></div><div class="msg-time">${t}</div>`;
-        const fBubble=wrap.querySelector('.file-bubble');
+        const fBubble=document.createElement('div');
+        fBubble.className=`file-bubble ${isMe?'me':'them'}`;
+        fBubble.style.cssText='user-select:none;-webkit-user-select:none;';
+        fBubble.innerHTML=`<span style="font-size:22px">📄</span><div><div class="file-name">${m.fileName}</div><div class="file-size">${m.fileSize}</div></div><a href="${m.url}" download="${m.fileName}" style="color:#fff;font-size:18px;text-decoration:none" onclick="event.stopPropagation()">⬇</a>`;
         attachHoldAndRightClick(fBubble,d.id,isMe);
-        row.appendChild(wrap);
+        row.appendChild(fBubble);
+        row.insertAdjacentHTML('beforeend',`<div class="msg-time">${t}</div>${isMe?getTickHtml(m,isMe):''}`)  ;
 
       } else {
         // Text message
-        const wrap=document.createElement('div');
-        wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start');
-        wrap.innerHTML=`<div class="bubble ${isMe?'me':'them'}" style="user-select:none;-webkit-user-select:none;">${escHtml(m.text||'')}<div class="msg-status">${isMe?'✓✓':''}</div></div><div class="msg-time">${t}</div>`;
-        const bubble=wrap.querySelector('.bubble');
+        const bubble=document.createElement('div');
+        bubble.className=`bubble ${isMe?'me':'them'}`;
+        bubble.style.cssText='user-select:none;-webkit-user-select:none;';
+        bubble.innerHTML=`${escHtml(m.text||'')}${getTickHtml(m,isMe)}`;
         attachHoldAndRightClick(bubble,d.id,isMe);
-        row.appendChild(wrap);
+        row.appendChild(bubble);
+        row.insertAdjacentHTML('beforeend',`<div class="msg-time">${t}</div>`);
       }
 
       list.appendChild(row);
@@ -1032,6 +1347,30 @@ function loadMessages(chatId){
 
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+// Mark incoming messages as delivered and seen
+async function markMessagesSeenAndDelivered(chatId){
+  try{
+    const q=query(
+      collection(db,'chats',chatId,'messages'),
+      orderBy('createdAt','asc')
+    );
+    const snap=await getDocs(q);
+    const batch=snap.docs
+      .filter(d=>{
+        const m=d.data();
+        // Only mark messages sent by peer (not me), not yet seen by me
+        return m.senderId!==ME.uid &&
+               !m.deleted &&
+               !(m.seenBy||[]).includes(ME.uid);
+      })
+      .map(d=>updateDoc(doc(db,'chats',chatId,'messages',d.id),{
+        deliveredTo: arrayUnion(ME.uid),
+        seenBy:      arrayUnion(ME.uid)
+      }));
+    await Promise.all(batch);
+  }catch(e){console.warn('markSeen error:',e.message);}
+}
+
 window.sendMsg=async function(){
   const input=document.getElementById('msgInput');
   const text=input.value.trim();
@@ -1044,7 +1383,9 @@ window.sendMsg=async function(){
       senderName:MY_PROFILE.displayName,
       createdAt:serverTimestamp(),
       deleted:false,
-      type:'text'
+      type:'text',
+      deliveredTo:[],
+      seenBy:[]
     });
     // Only clear after successful send
     input.value='';input.style.height='';
@@ -1067,7 +1408,7 @@ window.sendImage=async function(input){
   showNotif('Uploading image...');
   try{
     const url=await uploadToCloudinary(file,'chat_images');
-    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'image',url,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false});
+    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'image',url,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false,deliveredTo:[],seenBy:[]});
     updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'📷 Image',lastMessageTime:serverTimestamp()}).catch(()=>{});
     showNotif('Image sent! ✅');
   }catch(e){console.error('Image upload error:',e);showNotif('Upload failed: '+e.message);}
@@ -1079,7 +1420,7 @@ window.sendFile=async function(input){
   showNotif('Uploading file...');
   try{
     const url=await uploadToCloudinary(file,'chat_files');
-    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'file',url,fileName:file.name,fileSize:fmtSize(file.size),senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false});
+    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'file',url,fileName:file.name,fileSize:fmtSize(file.size),senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false,deliveredTo:[],seenBy:[]});
     updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'📄 '+file.name,lastMessageTime:serverTimestamp()}).catch(()=>{});
     showNotif('File sent! ✅');
   }catch(e){console.error('File upload error:',e);showNotif('Upload failed: '+e.message);}
@@ -1111,7 +1452,7 @@ window.stopRec=async function(){
     try{
       const voiceFile=new File([blob],`voice_${Date.now()}.webm`,{type:'audio/webm'});
       const url=await uploadToCloudinary(voiceFile,'chat_voice');
-      await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'voice',url,duration:dur,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false});
+      await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'voice',url,duration:dur,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false,deliveredTo:[],seenBy:[]});
       updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'🎤 Voice note',lastMessageTime:serverTimestamp()}).catch(()=>{});
     }catch(e){console.error('Voice upload error:',e);showNotif('Voice upload failed: '+e.message);}
   };
@@ -1226,12 +1567,21 @@ window.doForgot=async function(){
 // ════════════════════════════════════════
 
 function updateChatBadge(){
-  const total=Object.values(unreadCounts).reduce((a,b)=>a+b,0);
-  // Update ALL chat badge dots across all bottom navs
+  // Count how many chats have unread messages
+  const unreadChats=Object.values(unreadCounts).filter(c=>c>0).length;
   document.querySelectorAll('#chatBadge').forEach(b=>{
-    if(total>0){b.classList.remove('hidden');b.textContent=total>9?'9+':total||'';}
-    else{b.classList.add('hidden');}
+    if(unreadChats>0){
+      b.classList.remove('hidden');
+      b.textContent=unreadChats>9?'9+':String(unreadChats);
+      b.style.cssText='position:absolute;top:-6px;right:10px;min-width:16px;height:16px;background:var(--danger);border-radius:999px;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;padding:0 4px;';
+    }else{b.classList.add('hidden');}
   });
+  // Also update My Chats tab badge
+  const chatUnreadBadge=document.getElementById('chatUnreadBadge');
+  if(chatUnreadBadge){
+    if(unreadChats>0){chatUnreadBadge.textContent=unreadChats;chatUnreadBadge.classList.remove('hidden');}
+    else chatUnreadBadge.classList.add('hidden');
+  }
 }
 
 function showMsgPopup(senderName,senderPhoto,msgText,chatId,peerId){
@@ -1322,6 +1672,11 @@ async function startGlobalMessageListener(){
         // Skip if already seen (chat is open)
         if(CHAT_ID===chatId&&document.getElementById('directChat').classList.contains('active'))continue;
 
+        // Mark as delivered (received on device) even if not opened
+        updateDoc(doc(db,'chats',chatId,'messages',change.doc.id),{
+          deliveredTo:arrayUnion(ME.uid)
+        }).catch(()=>{});
+
         // Increment unread
         unreadCounts[chatId]=(unreadCounts[chatId]||0)+1;
         updateChatBadge();
@@ -1383,7 +1738,19 @@ window.doSignout=async function(){
   if(ME){try{await updateDoc(doc(db,'users',ME.uid),{isOnline:false,lastSeen:serverTimestamp()});}catch(e){}}
   await signOut(auth);
 };
-window.copyCode=function(){navigator.clipboard.writeText(window._fc||'').then(()=>showNotif('Friend code copied! 📋')).catch(()=>showNotif(window._fc||''));};
+window.copyCode=function(){navigator.clipboard.writeText(window._fc||'').then(()=>showNotif('Friend code copied! 📋')).catch(()=>showNotif(window._fc||''));}
+
+window.openSettings=function(){
+  // Sync friend code into settings sheet
+  const sfcEl=document.getElementById('settingsFriendCode');
+  if(sfcEl)sfcEl.textContent=window._fc||MY_PROFILE?.friendCode||'—';
+  document.getElementById('settingsOverlay').classList.add('open');
+  document.getElementById('settingsSheet').classList.add('open');
+};
+window.closeSettings=function(){
+  document.getElementById('settingsOverlay').classList.remove('open');
+  document.getElementById('settingsSheet').classList.remove('open');
+};;
 
 function showNotif(msg){
   const n=document.createElement('div');n.className='notif';n.textContent=msg;
