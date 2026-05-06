@@ -4,228 +4,280 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>COVA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{min-height:100vh;background:#0A0A0F;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#F2EEF5;overflow:hidden;}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;}
+:root{
+  --rose:#C9748A;--violet:#9B7FD4;--bg:#08080F;--surface:#0E0E18;
+  --border:rgba(255,255,255,0.07);--text:#F0ECF8;--muted:#6A6080;--dim:#2E2A40;
+  --online:#6EC9A0;--danger:#E07070;
+  --grad:linear-gradient(135deg,#C9748A,#9B7FD4);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);overflow:hidden;}
+
+/* ── PAGE TRANSITIONS ── */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;will-change:transform,opacity;}
 .screen.active{display:flex;}
-.orb{position:fixed;border-radius:50%;pointer-events:none;filter:blur(60px);z-index:0;}
-.orb1{width:400px;height:400px;top:-150px;right:-100px;background:radial-gradient(circle,rgba(201,116,138,0.35) 0%,transparent 70%);animation:f1 8s ease-in-out infinite;}
-.orb2{width:350px;height:350px;bottom:-100px;left:-100px;background:radial-gradient(circle,rgba(155,127,212,0.25) 0%,transparent 70%);animation:f2 11s ease-in-out infinite;}
-@keyframes f1{0%,100%{transform:translateY(0)}50%{transform:translateY(-25px)}}
-@keyframes f2{0%,100%{transform:translateY(0)}50%{transform:translateY(20px)}}
+.screen.slide-in-right{animation:slideInRight 0.32s cubic-bezier(0.22,1,0.36,1) forwards;}
+.screen.slide-in-left{animation:slideInLeft 0.32s cubic-bezier(0.22,1,0.36,1) forwards;}
+.screen.slide-out-left{animation:slideOutLeft 0.28s cubic-bezier(0.4,0,1,1) forwards;}
+.screen.slide-out-right{animation:slideOutRight 0.28s cubic-bezier(0.4,0,1,1) forwards;}
+.screen.fade-in{animation:fadeIn 0.3s ease forwards;}
+@keyframes slideInRight{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideInLeft{from{transform:translateX(-60px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOutLeft{from{transform:translateX(0);opacity:1}to{transform:translateX(-40px);opacity:0}}
+@keyframes slideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(40px);opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
+
+/* ── AMBIENT ORBS ── */
+.orb{position:fixed;border-radius:50%;pointer-events:none;filter:blur(70px);z-index:0;}
+.orb1{width:420px;height:420px;top:-160px;right:-110px;background:radial-gradient(circle,rgba(201,116,138,0.3) 0%,transparent 70%);animation:f1 9s ease-in-out infinite;}
+.orb2{width:380px;height:380px;bottom:-110px;left:-110px;background:radial-gradient(circle,rgba(155,127,212,0.22) 0%,transparent 70%);animation:f2 12s ease-in-out infinite;}
+.orb3{width:200px;height:200px;top:40%;left:30%;background:radial-gradient(circle,rgba(201,116,138,0.08) 0%,transparent 70%);animation:f1 15s ease-in-out infinite reverse;}
+@keyframes f1{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-28px) scale(1.04)}}
+@keyframes f2{0%,100%{transform:translateY(0)}50%{transform:translateY(22px)}}
+
 .z1{position:relative;z-index:1;}
 .hidden{display:none!important;}
-.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:sp 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:sp 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
 @keyframes sp{to{transform:rotate(360deg)}}
 
 /* ── AUTH ── */
-#authScreen{align-items:center;justify-content:center;overflow-y:auto;padding:20px;}
-.auth-wrap{width:100%;max-width:400px;animation:su 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;}
-@keyframes su{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.logo-sec{text-align:center;margin-bottom:32px;}
-.logo-mark{display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:24px;background:linear-gradient(135deg,#C9748A,#9B7FD4);font-size:32px;margin-bottom:14px;position:relative;animation:pulse 3s ease-in-out infinite;}
-.logo-mark::after{content:'';position:absolute;inset:-3px;border-radius:27px;border:1.5px solid rgba(201,116,138,0.45);}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,116,138,0.3)}50%{box-shadow:0 0 25px 8px rgba(201,116,138,0.12)}}
-.logo-name{font-size:38px;font-weight:300;letter-spacing:10px;color:#F2EEF5;display:block;margin-bottom:6px;}
-.logo-tag{font-size:11px;color:#5A5570;letter-spacing:1.5px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.logo-tag::before,.logo-tag::after{content:'';display:inline-block;width:24px;height:0.5px;background:rgba(255,255,255,0.15);}
-.card{background:rgba(14,14,22,0.93);border:1px solid rgba(255,255,255,0.08);border-radius:26px;overflow:hidden;}
-.card::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,#C9748A,#9B7FD4,transparent);}
-.card-body{padding:24px;}
-.tabs{display:flex;background:rgba(8,8,14,0.8);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:3px;margin-bottom:22px;gap:3px;}
-.tab{flex:1;padding:9px;text-align:center;border-radius:9px;font-size:13px;font-weight:500;color:#5A5570;cursor:pointer;border:none;background:transparent;transition:all 0.22s;font-family:inherit;}
-.tab.on{color:#E8A0B0;border:1px solid rgba(201,116,138,0.3);background:linear-gradient(135deg,rgba(201,116,138,0.12),rgba(155,127,212,0.08));}
-.fg{margin-bottom:14px;}
-.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#6A6080;margin-bottom:6px;}
+#authScreen{align-items:center;justify-content:center;overflow-y:auto;padding:20px;background:var(--bg);}
+.auth-wrap{width:100%;max-width:390px;animation:fadeIn 0.55s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;}
+.logo-sec{text-align:center;margin-bottom:28px;}
+.logo-mark{display:inline-flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:22px;background:var(--grad);font-size:30px;margin-bottom:12px;position:relative;animation:pulse 3s ease-in-out infinite;box-shadow:0 8px 32px rgba(201,116,138,0.25);}
+.logo-mark::after{content:'';position:absolute;inset:-3px;border-radius:25px;border:1.5px solid rgba(201,116,138,0.4);}
+@keyframes pulse{0%,100%{box-shadow:0 8px 32px rgba(201,116,138,0.2)}50%{box-shadow:0 8px 40px rgba(201,116,138,0.35)}}
+.logo-name{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:38px;font-weight:300;letter-spacing:10px;color:var(--text);display:block;margin-bottom:5px;}
+.logo-tag{font-size:10.5px;color:var(--muted);letter-spacing:1.5px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.logo-tag::before,.logo-tag::after{content:'';display:inline-block;width:22px;height:0.5px;background:rgba(255,255,255,0.12);}
+.card{background:rgba(12,12,20,0.95);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);}
+.card::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,var(--rose),var(--violet),transparent);}
+.card-body{padding:22px;}
+.tabs{display:flex;background:rgba(6,6,12,0.8);border:1px solid rgba(255,255,255,0.04);border-radius:11px;padding:3px;margin-bottom:20px;gap:3px;}
+.tab{flex:1;padding:8px 12px;text-align:center;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:transparent;transition:all 0.22s;font-family:inherit;white-space:nowrap;}
+.tab.on{color:#E8A0B0;border:1px solid rgba(201,116,138,0.28);background:linear-gradient(135deg,rgba(201,116,138,0.1),rgba(155,127,212,0.07));}
+.fg{margin-bottom:13px;}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#6A6080;margin-bottom:5px;}
 .iw{position:relative;display:flex;align-items:center;}
-.ii{position:absolute;left:13px;color:#5A5570;font-size:15px;pointer-events:none;transition:color 0.2s;}
-.fi{width:100%;padding:13px 13px 13px 40px;background:#13131C;border:1px solid rgba(255,255,255,0.07);border-radius:12px;font-size:14px;color:#F2EEF5;outline:none;transition:all 0.22s;font-family:inherit;}
-.fi::placeholder{color:#2E2A40;}
-.fi:focus{border-color:#C9748A;background:rgba(201,116,138,0.04);box-shadow:0 0 0 3px rgba(201,116,138,0.08);}
-.iw:focus-within .ii{color:#C9748A;}
-.eyeb{position:absolute;right:12px;background:none;border:none;color:#5A5570;cursor:pointer;font-size:14px;padding:3px;}
-.err{display:flex;align-items:center;gap:7px;background:rgba(224,112,112,0.08);border:1px solid rgba(224,112,112,0.3);border-radius:9px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#E07070;animation:shake 0.3s ease;}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.sbtn{width:100%;padding:14px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;border-radius:12px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;margin-top:6px;transition:all 0.2s;font-family:inherit;}
-.sbtn:hover{opacity:0.9;}
-.sbtn:active{transform:scale(0.98);}
-.sbtn:disabled{opacity:0.6;cursor:not-allowed;}
-.ghost-btn{width:100%;background:none;border:none;color:#5A5570;font-size:12px;cursor:pointer;padding:10px;font-family:inherit;}
-.ghost-btn:hover{color:#C9748A;}
-.priv{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:12px;padding:9px;border-radius:9px;border:1px solid rgba(155,127,212,0.18);font-size:10px;color:#6A6080;}
-.brow{text-align:center;margin-top:22px;font-size:10px;color:#2E2A40;display:flex;align-items:center;justify-content:center;gap:6px;}
+.ii{position:absolute;left:12px;color:var(--muted);font-size:14px;pointer-events:none;transition:color 0.2s;}
+.fi{width:100%;padding:12px 12px 12px 38px;background:#11111A;border:1px solid var(--border);border-radius:11px;font-size:14px;color:var(--text);outline:none;transition:all 0.22s;font-family:inherit;}
+.fi::placeholder{color:var(--dim);}
+.fi:focus{border-color:var(--rose);background:rgba(201,116,138,0.04);box-shadow:0 0 0 3px rgba(201,116,138,0.07);}
+.iw:focus-within .ii{color:var(--rose);}
+.eyeb{position:absolute;right:11px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:3px;}
+.err{display:flex;align-items:center;gap:7px;background:rgba(224,112,112,0.07);border:1px solid rgba(224,112,112,0.28);border-radius:9px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--danger);animation:shake 0.3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.sbtn{width:100%;padding:13px;background:var(--grad);border:none;border-radius:11px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;margin-top:5px;transition:all 0.2s;font-family:inherit;letter-spacing:0.3px;box-shadow:0 4px 18px rgba(201,116,138,0.3);}
+.sbtn:hover{opacity:0.88;transform:translateY(-1px);box-shadow:0 6px 24px rgba(201,116,138,0.38);}
+.sbtn:active{transform:scale(0.97) translateY(0);}
+.sbtn:disabled{opacity:0.55;cursor:not-allowed;transform:none;}
+.ghost-btn{width:100%;background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:9px;font-family:inherit;transition:color 0.2s;}
+.ghost-btn:hover{color:var(--rose);}
+.priv{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:10px;padding:8px;border-radius:9px;border:1px solid rgba(155,127,212,0.15);font-size:10px;color:#6A6080;}
+.brow{text-align:center;margin-top:18px;font-size:10px;color:var(--dim);display:flex;align-items:center;justify-content:center;gap:6px;}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(8,8,12,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:8px 0 16px;z-index:50;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative;}
-.nav-icon{font-size:22px;line-height:1;}
-.nav-label{font-size:9px;letter-spacing:0.5px;color:#5A5570;}
-.nav-btn.on .nav-label{color:#C9748A;}
-.nav-btn.on .nav-icon{filter:drop-shadow(0 0 6px rgba(201,116,138,0.6));}
-.notif-badge{position:absolute;top:-2px;right:22px;width:8px;height:8px;background:#E07070;border-radius:50%;border:2px solid #0A0A0F;}
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(6,6,10,0.97);border-top:1px solid rgba(255,255,255,0.05);padding:8px 0 18px;z-index:50;backdrop-filter:blur(20px);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative;transition:transform 0.15s;}
+.nav-btn:active{transform:scale(0.9);}
+.nav-icon{font-size:21px;line-height:1;transition:filter 0.2s;}
+.nav-label{font-size:9px;letter-spacing:0.8px;color:var(--muted);font-weight:500;text-transform:uppercase;transition:color 0.2s;}
+.nav-btn.on .nav-label{color:var(--rose);}
+.nav-btn.on .nav-icon{filter:drop-shadow(0 0 7px rgba(201,116,138,0.65));}
+.notif-badge{position:absolute;top:-2px;right:18px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid var(--bg);animation:pulse 2s infinite;}
 
-/* ── INSTAGRAM-STYLE PROFILE (First Screen After Login) ── */
-#profileHomeScreen{background:#0A0A0F;overflow-y:auto;padding-bottom:80px;}
-.insta-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);}
-.insta-username{font-size:16px;font-weight:500;color:#F2EEF5;letter-spacing:0.5px;}
-.insta-topbar-actions{display:flex;gap:10px;}
-.insta-icon-btn{background:none;border:none;color:#A09AB0;cursor:pointer;font-size:20px;padding:4px;}
-.insta-icon-btn:hover{color:#C9748A;}
-.insta-profile-header{padding:20px;}
-.insta-profile-top{display:flex;align-items:center;gap:20px;margin-bottom:16px;}
+/* ── TOPBARS ── */
+.insta-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);backdrop-filter:blur(12px);background:rgba(8,8,15,0.7);}
+.insta-username{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);letter-spacing:0.5px;}
+.insta-topbar-actions{display:flex;gap:6px;}
+.insta-icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:19px;padding:5px;border-radius:8px;transition:all 0.18s;}
+.insta-icon-btn:hover{color:var(--rose);background:rgba(201,116,138,0.08);}
+.insta-icon-btn:active{transform:scale(0.88);}
+
+/* ── PROFILE AVATAR ── */
+.insta-profile-header{padding:18px 18px 10px;}
+.insta-profile-top{display:flex;align-items:center;gap:18px;margin-bottom:14px;}
 .insta-avatar-wrap{position:relative;flex-shrink:0;}
-.insta-avatar{width:86px;height:86px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;border:3px solid transparent;background-clip:padding-box;position:relative;}
-.insta-avatar-ring{position:absolute;inset:-3px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);z-index:-1;}
-.insta-avatar-edit{position:absolute;bottom:2px;right:2px;width:24px;height:24px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid #0A0A0F;}
-.insta-stats{display:flex;gap:20px;flex:1;justify-content:center;}
-.insta-stat{text-align:center;cursor:pointer;}
-.insta-stat-num{font-size:17px;font-weight:600;color:#F2EEF5;display:block;}
-.insta-stat-label{font-size:11px;color:#7A7090;}
-.insta-profile-info{margin-bottom:16px;}
-.insta-display-name{font-size:14px;font-weight:600;color:#F2EEF5;margin-bottom:2px;}
-.insta-bio{font-size:13px;color:#A09AB0;line-height:1.5;}
-.insta-friend-code{display:inline-flex;align-items:center;gap:8px;background:rgba(201,116,138,0.08);border:1px solid rgba(201,116,138,0.2);border-radius:8px;padding:6px 12px;margin-top:8px;}
-.insta-friend-code-label{font-size:10px;color:#7A7090;letter-spacing:1px;}
-.insta-friend-code-val{font-size:14px;letter-spacing:4px;color:#E8A0B0;font-weight:300;}
-.insta-actions{display:flex;gap:8px;margin-bottom:16px;}
-.insta-btn{flex:1;padding:8px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-align:center;transition:all 0.2s;}
-.insta-btn-primary{background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;color:#fff;}
-.insta-btn-secondary{background:none;border:1px solid rgba(255,255,255,0.12);color:#F2EEF5;}
-.insta-btn-secondary:hover{background:rgba(255,255,255,0.04);}
-.insta-stories{display:flex;gap:12px;padding:4px 20px 16px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,0.05);}
-.insta-stories::-webkit-scrollbar{display:none;}
-.story-item{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;cursor:pointer;}
-.story-ring{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);padding:2px;}
-.story-ring-inner{width:100%;height:100%;border-radius:50%;background:#0A0A0F;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid #0A0A0F;}
-.story-add{background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.15);}
-.story-add .story-ring-inner{font-size:28px;color:#5A5570;}
-.story-label{font-size:10px;color:#7A7090;max-width:60px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.insta-posts-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.06);}
-.posts-tab{flex:1;padding:12px;text-align:center;font-size:20px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;}
-.posts-tab.on{border-bottom-color:#C9748A;}
-.insta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
-.grid-item{aspect-ratio:1;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;position:relative;overflow:hidden;}
-.grid-item img{width:100%;height:100%;object-fit:cover;}
-.grid-add{border:1px dashed rgba(255,255,255,0.1);cursor:pointer;}
-.grid-add-inner{display:flex;flex-direction:column;align-items:center;gap:4px;color:#5A5570;}
-.grid-add-inner span{font-size:28px;}
-.grid-add-inner label{font-size:10px;}
+.insta-avatar{width:84px;height:84px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;position:relative;transition:transform 0.2s;}
+.insta-avatar:active{transform:scale(0.95);}
+.insta-avatar-ring{position:absolute;inset:-3px;border-radius:50%;background:var(--grad);z-index:-1;opacity:0.7;}
+.insta-avatar-edit{position:absolute;bottom:1px;right:1px;width:24px;height:24px;background:var(--grad);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:2px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,0.4);}
 
-/* ── CHAT SCREEN (tabs: My Friends | Requests) ── */
-#chatScreen{background:#0A0A0F;}
-.chat-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0;flex-shrink:0;}
-.chat-topbar-title{font-size:22px;font-weight:300;letter-spacing:4px;color:#F2EEF5;}
-.chat-sub-tabs{display:flex;margin:12px 16px 0;background:rgba(8,8,14,0.8);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:3px;gap:3px;}
-.chat-sub-tab{flex:1;padding:9px;text-align:center;border-radius:9px;font-size:12px;font-weight:500;color:#5A5570;cursor:pointer;border:none;background:transparent;font-family:inherit;transition:all 0.2s;position:relative;}
-.chat-sub-tab.on{color:#E8A0B0;border:1px solid rgba(201,116,138,0.3);background:linear-gradient(135deg,rgba(201,116,138,0.12),rgba(155,127,212,0.08));}
-.req-count{display:inline-flex;align-items:center;justify-content:center;background:#E07070;color:#fff;font-size:9px;font-weight:700;border-radius:999px;padding:1px 5px;margin-left:4px;min-width:16px;}
-.chat-tab-body{flex:1;overflow-y:auto;padding:12px 16px 80px;}
+/* ── STATS ── */
+.insta-stats{display:flex;gap:16px;flex:1;justify-content:center;}
+.insta-stat{text-align:center;cursor:pointer;padding:6px 10px;border-radius:10px;transition:background 0.18s;}
+.insta-stat:hover{background:rgba(255,255,255,0.04);}
+.insta-stat-num{font-size:18px;font-weight:700;color:var(--text);display:block;font-family:'DM Serif Display',serif;}
+.insta-stat-label{font-size:9.5px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-weight:600;margin-top:1px;}
 
-/* My Friends list */
-.friend-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;cursor:pointer;transition:background 0.18s;margin-bottom:4px;}
+/* ── PROFILE INFO ── */
+.insta-profile-info{margin-bottom:14px;}
+.insta-display-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.insta-bio{font-size:13px;color:#A09AB0;line-height:1.55;}
+.insta-friend-code{display:inline-flex;align-items:center;gap:8px;background:rgba(201,116,138,0.07);border:1px solid rgba(201,116,138,0.18);border-radius:8px;padding:6px 11px;margin-top:8px;transition:all 0.2s;}
+.insta-friend-code:hover{background:rgba(201,116,138,0.12);}
+.insta-friend-code-label{font-size:9px;color:var(--muted);letter-spacing:1.2px;font-weight:600;text-transform:uppercase;}
+.insta-friend-code-val{font-size:13px;letter-spacing:4px;color:#E8A0B0;font-weight:400;}
+
+/* ── BUTTONS — compact pill style ── */
+.insta-actions{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.insta-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;letter-spacing:0.2px;}
+.insta-btn:active{transform:scale(0.94);}
+.insta-btn-primary{background:var(--grad);border:none;color:#fff;box-shadow:0 3px 12px rgba(201,116,138,0.28);}
+.insta-btn-primary:hover{opacity:0.88;box-shadow:0 5px 18px rgba(201,116,138,0.36);}
+.insta-btn-secondary{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text);}
+.insta-btn-secondary:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.16);}
+.insta-btn-danger{background:rgba(224,112,112,0.08);border:1px solid rgba(224,112,112,0.22);color:var(--danger);}
+.insta-btn-danger:hover{background:rgba(224,112,112,0.14);}
+
+/* ── HOME SCREEN ── */
+#profileHomeScreen{background:var(--bg);overflow-y:auto;padding-bottom:80px;}
+.home-avatar-center{display:flex;flex-direction:column;align-items:center;padding:30px 20px 18px;}
+.home-avatar-outer{position:relative;display:inline-block;}
+.home-story-btn{position:absolute;bottom:4px;right:4px;width:27px;height:27px;background:var(--grad);border-radius:50%;border:2.5px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;z-index:2;transition:transform 0.18s;box-shadow:0 2px 10px rgba(201,116,138,0.4);}
+.home-story-btn:active{transform:scale(0.88);}
+.home-add-post-btn{position:absolute;top:14px;right:14px;width:40px;height:40px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;z-index:10;transition:all 0.22s;}
+.home-add-post-btn:hover{background:rgba(201,116,138,0.14);border-color:rgba(201,116,138,0.38);transform:scale(1.08);}
+.home-add-post-btn:active{transform:scale(0.9);}
+.home-posts-feed{padding:2px;}
+.insta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px;}
+.grid-item{aspect-ratio:1;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;position:relative;overflow:hidden;transition:opacity 0.18s;}
+.grid-item:hover{opacity:0.85;}
+.grid-item img,.grid-item video{width:100%;height:100%;object-fit:cover;}
+
+/* ── CHAT SCREEN ── */
+#chatScreen{background:var(--bg);}
+.chat-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 0;flex-shrink:0;}
+.chat-topbar-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);}
+.chat-sub-tabs{display:flex;margin:10px 14px 0;background:rgba(6,6,12,0.8);border:1px solid rgba(255,255,255,0.04);border-radius:11px;padding:3px;gap:3px;}
+.chat-sub-tab{padding:8px 14px;text-align:center;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:transparent;font-family:inherit;transition:all 0.2s;white-space:nowrap;letter-spacing:0.2px;}
+.chat-sub-tab.on{color:#E8A0B0;border:1px solid rgba(201,116,138,0.28);background:linear-gradient(135deg,rgba(201,116,138,0.1),rgba(155,127,212,0.07));}
+.chat-sub-tab:active{transform:scale(0.94);}
+.req-count{display:inline-flex;align-items:center;justify-content:center;background:var(--danger);color:#fff;font-size:9px;font-weight:700;border-radius:999px;padding:1px 5px;margin-left:4px;min-width:16px;}
+.chat-tab-body{flex:1;overflow-y:auto;padding:12px 14px 80px;}
+
+/* ── FRIEND LIST ── */
+.friend-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:14px;cursor:pointer;transition:all 0.18s;margin-bottom:4px;}
 .friend-item:hover{background:rgba(255,255,255,0.04);}
-.friend-avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#fff;flex-shrink:0;position:relative;}
-.friend-online{position:absolute;bottom:1px;right:1px;width:12px;height:12px;background:#6EC9A0;border-radius:50%;border:2px solid #0A0A0F;}
+.friend-item:active{transform:scale(0.98);background:rgba(201,116,138,0.06);}
+.friend-avatar{width:48px;height:48px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#fff;flex-shrink:0;position:relative;}
+.friend-online{position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;border:2px solid var(--bg);}
 .friend-info{flex:1;min-width:0;}
-.friend-name{font-size:14px;font-weight:500;color:#F2EEF5;margin-bottom:2px;}
-.friend-preview{font-size:12px;color:#5A5570;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.friend-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.friend-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .friend-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
-.friend-time{font-size:10px;color:#3A3550;}
-.unread-dot{width:8px;height:8px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border-radius:50%;}
+.unread-dot{width:8px;height:8px;background:var(--grad);border-radius:50%;}
 
-/* Friend Requests */
-.req-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px;margin-bottom:10px;}
-.req-card-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.req-card-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#9B7FD4,#C9748A);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;}
+/* ── FRIEND REQUESTS ── */
+.req-card{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:16px;padding:13px;margin-bottom:10px;transition:border-color 0.2s;}
+.req-card:hover{border-color:rgba(201,116,138,0.2);}
+.req-card-top{display:flex;align-items:center;gap:12px;margin-bottom:11px;}
+.req-card-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--rose));display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;flex-shrink:0;}
 .req-card-info{flex:1;}
-.req-card-name{font-size:14px;font-weight:500;color:#F2EEF5;margin-bottom:2px;}
-.req-card-code{font-size:11px;color:#7A7090;}
-.req-card-time{font-size:10px;color:#3A3550;}
+.req-card-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.req-card-code{font-size:11px;color:var(--muted);}
+.req-card-time{font-size:10px;color:var(--dim);}
 .req-card-btns{display:flex;gap:8px;}
-.req-accept{flex:1;padding:10px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
-.req-reject{padding:10px 16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#7A7090;font-size:13px;cursor:pointer;font-family:inherit;}
-.req-notify-bar{display:flex;align-items:center;gap:8px;background:rgba(201,116,138,0.06);border:1px solid rgba(201,116,138,0.15);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#E8A0B0;}
-.add-friend-bar{display:flex;gap:8px;margin-bottom:16px;}
-.add-friend-input{flex:1;padding:11px 14px;background:#13131C;border:1px solid rgba(255,255,255,0.07);border-radius:12px;font-size:14px;color:#F2EEF5;outline:none;font-family:inherit;letter-spacing:3px;text-transform:uppercase;}
+.req-accept{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;background:var(--grad);border:none;border-radius:20px;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;box-shadow:0 3px 10px rgba(201,116,138,0.25);}
+.req-accept:hover{opacity:0.88;}
+.req-accept:active{transform:scale(0.93);}
+.req-reject{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;background:none;border:1px solid rgba(255,255,255,0.09);border-radius:20px;color:var(--muted);font-size:12.5px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;}
+.req-reject:hover{border-color:rgba(224,112,112,0.3);color:var(--danger);}
+.req-reject:active{transform:scale(0.93);}
+.req-notify-bar{display:flex;align-items:center;gap:8px;background:rgba(201,116,138,0.05);border:1px solid rgba(201,116,138,0.13);border-radius:10px;padding:9px 13px;margin-bottom:13px;font-size:12px;color:#E8A0B0;}
+.add-friend-bar{display:flex;gap:8px;margin-bottom:14px;}
+.add-friend-input{flex:1;padding:11px 14px;background:#11111A;border:1px solid var(--border);border-radius:12px;font-size:14px;color:var(--text);outline:none;font-family:inherit;letter-spacing:3px;text-transform:uppercase;transition:border-color 0.2s;}
 .add-friend-input::placeholder{letter-spacing:1px;font-size:13px;text-transform:none;}
-.add-friend-input:focus{border-color:#C9748A;}
-.add-btn{padding:11px 16px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.add-friend-input:focus{border-color:var(--rose);}
+.add-btn{padding:11px 16px;background:var(--grad);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.2s;box-shadow:0 3px 12px rgba(201,116,138,0.25);}
+.add-btn:hover{opacity:0.88;}
+.add-btn:active{transform:scale(0.95);}
 
 /* ── DIRECT CHAT ── */
-#directChat{background:#0A0A0F;}
-.dchat-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
-.dchat-back{background:none;border:none;color:#A09AB0;cursor:pointer;font-size:22px;padding:4px;}
-.dchat-back:hover{color:#C9748A;}
+#directChat{background:var(--bg);}
+.dchat-topbar{display:flex;align-items:center;gap:11px;padding:13px 15px;border-bottom:1px solid var(--border);flex-shrink:0;backdrop-filter:blur(12px);background:rgba(8,8,15,0.8);}
+.dchat-back{background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;padding:4px;border-radius:8px;transition:all 0.18s;}
+.dchat-back:hover{color:var(--rose);background:rgba(201,116,138,0.08);}
+.dchat-back:active{transform:scale(0.88);}
 .dchat-peer{display:flex;align-items:center;gap:10px;flex:1;}
-.dchat-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#9B7FD4,#C9748A);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;}
-.dchat-name{font-size:15px;font-weight:500;color:#F2EEF5;}
-.dchat-status{font-size:11px;color:#6EC9A0;}
-.msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;}
+.dchat-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--rose));display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;}
+.dchat-name{font-size:15px;font-weight:600;color:var(--text);}
+.dchat-status{font-size:11px;color:var(--online);}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:7px;}
 .msg-row{display:flex;align-items:flex-end;gap:6px;}
 .msg-row.me{flex-direction:row-reverse;}
-.bubble{max-width:72%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word;}
-.bubble.them{background:#1A1A26;color:#F2EEF5;border-bottom-left-radius:4px;}
-.bubble.me{background:linear-gradient(135deg,#C9748A,#9B7FD4);color:#fff;border-bottom-right-radius:4px;}
-.bubble.deleted{font-style:italic;opacity:0.4;font-size:12px;}
-.bubble.system-msg{background:rgba(255,255,255,0.04);color:#7A7090;font-size:11px;font-style:italic;text-align:center;border-radius:10px;max-width:100%;}
-.msg-time{font-size:9px;color:#3A3550;margin-bottom:4px;white-space:nowrap;}
-.msg-status{font-size:9px;color:rgba(255,255,255,0.5);margin-top:2px;text-align:right;}
-.typing-row{display:flex;align-items:center;gap:6px;padding:4px 0;}
-.typing-bubble{background:#1A1A26;border-radius:18px;border-bottom-left-radius:4px;padding:10px 14px;display:flex;gap:4px;align-items:center;}
-.dot{width:6px;height:6px;background:#5A5570;border-radius:50%;animation:bounce 1.2s ease-in-out infinite;}
+.bubble{max-width:72%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word;animation:bubblePop 0.2s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes bubblePop{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
+.bubble.them{background:#1A1A28;color:var(--text);border-bottom-left-radius:4px;}
+.bubble.me{background:var(--grad);color:#fff;border-bottom-right-radius:4px;}
+.bubble.deleted{font-style:italic;opacity:0.35;font-size:12px;}
+.bubble.system-msg{background:rgba(255,255,255,0.03);color:var(--muted);font-size:11px;font-style:italic;text-align:center;border-radius:10px;max-width:100%;}
+.msg-time{font-size:9px;color:var(--dim);margin-bottom:4px;white-space:nowrap;}
+.msg-status{font-size:9px;color:rgba(255,255,255,0.45);margin-top:2px;text-align:right;}
+.dot{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s ease-in-out infinite;}
 .dot:nth-child(2){animation-delay:0.2s;}
 .dot:nth-child(3){animation-delay:0.4s;}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
-.ctx-menu{position:fixed;background:#1E1E2A;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:4px;z-index:200;min-width:150px;}
-.ctx-item{padding:8px 12px;font-size:12px;color:#A09AB0;cursor:pointer;border-radius:6px;transition:background 0.15s;}
-.ctx-item:hover{background:rgba(255,255,255,0.06);color:#F2EEF5;}
-.ctx-item.danger{color:#E07070;}
-.chat-input-bar{display:flex;align-items:flex-end;gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
-.attach-row{display:none;padding:8px 16px;gap:12px;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0;overflow-x:auto;}
+.ctx-menu{position:fixed;background:#1C1C28;border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:5px;z-index:200;min-width:155px;box-shadow:0 12px 40px rgba(0,0,0,0.5);animation:fadeIn 0.15s ease;}
+.ctx-item{padding:9px 13px;font-size:12.5px;color:#A09AB0;cursor:pointer;border-radius:8px;transition:background 0.15s;}
+.ctx-item:hover{background:rgba(255,255,255,0.06);color:var(--text);}
+.ctx-item.danger{color:var(--danger);}
+.chat-input-bar{display:flex;align-items:flex-end;gap:8px;padding:11px 14px;border-top:1px solid var(--border);flex-shrink:0;}
+.attach-row{display:none;padding:8px 14px;gap:12px;border-top:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
 .attach-row.open{display:flex;}
-.attach-opt{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);flex-shrink:0;}
-.attach-opt:hover{border-color:rgba(201,116,138,0.4);}
-.attach-opt span{font-size:20px;}
-.attach-opt label{font-size:10px;color:#7A7090;white-space:nowrap;}
-.msg-input{flex:1;padding:11px 14px;background:#13131C;border:1px solid rgba(255,255,255,0.07);border-radius:22px;font-size:14px;color:#F2EEF5;outline:none;resize:none;font-family:inherit;line-height:1.4;max-height:120px;}
-.msg-input::placeholder{color:#3A3550;}
-.msg-input:focus{border-color:rgba(201,116,138,0.4);}
-.send-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all 0.2s;}
-.send-btn:hover{opacity:0.9;transform:scale(1.05);}
-.send-btn:active{transform:scale(0.95);}
-.input-icon-btn{background:none;border:none;color:#5A5570;cursor:pointer;font-size:20px;padding:4px;flex-shrink:0;}
-.input-icon-btn:hover{color:#C9748A;}
-.rec-bar{display:none;align-items:center;gap:10px;padding:10px 16px;background:rgba(224,112,112,0.08);border-top:1px solid rgba(224,112,112,0.2);flex-shrink:0;}
+.attach-opt{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 12px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.02);flex-shrink:0;transition:all 0.18s;}
+.attach-opt:hover{border-color:rgba(201,116,138,0.38);background:rgba(201,116,138,0.06);}
+.attach-opt span{font-size:19px;}
+.attach-opt label{font-size:10px;color:var(--muted);white-space:nowrap;}
+.msg-input{flex:1;padding:11px 14px;background:#11111A;border:1px solid var(--border);border-radius:22px;font-size:14px;color:var(--text);outline:none;resize:none;font-family:inherit;line-height:1.4;max-height:120px;transition:border-color 0.2s;}
+.msg-input::placeholder{color:var(--dim);}
+.msg-input:focus{border-color:rgba(201,116,138,0.38);}
+.send-btn{width:42px;height:42px;border-radius:50%;background:var(--grad);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:all 0.2s;box-shadow:0 3px 12px rgba(201,116,138,0.3);}
+.send-btn:hover{opacity:0.88;transform:scale(1.06);}
+.send-btn:active{transform:scale(0.93);}
+.input-icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:19px;padding:4px;flex-shrink:0;transition:color 0.18s;}
+.input-icon-btn:hover{color:var(--rose);}
+.rec-bar{display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(224,112,112,0.07);border-top:1px solid rgba(224,112,112,0.18);flex-shrink:0;}
 .rec-bar.active{display:flex;}
-.rec-dot{width:10px;height:10px;background:#E07070;border-radius:50%;animation:recblink 1s ease-in-out infinite;}
-@keyframes recblink{0%,100%{opacity:1}50%{opacity:0.3}}
-.rec-time{font-size:13px;color:#E07070;}
-.rec-cancel{background:none;border:1px solid rgba(255,255,255,0.1);color:#7A7090;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;}
-.rec-send{background:linear-gradient(135deg,#C9748A,#9B7FD4);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;}
+.rec-dot{width:10px;height:10px;background:var(--danger);border-radius:50%;animation:recblink 1s ease-in-out infinite;}
+@keyframes recblink{0%,100%{opacity:1}50%{opacity:0.25}}
+.rec-time{font-size:13px;color:var(--danger);}
+.rec-cancel{display:inline-flex;padding:6px 14px;background:none;border:1px solid rgba(255,255,255,0.09);border-radius:20px;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.18s;}
+.rec-send{display:inline-flex;padding:6px 14px;background:var(--grad);border:none;border-radius:20px;color:#fff;font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.18s;}
 .img-bubble{max-width:200px;border-radius:14px;overflow:hidden;cursor:pointer;}
 .img-bubble img{width:100%;display:block;}
 .voice-bubble{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:18px;min-width:140px;}
-.voice-bubble.me{background:linear-gradient(135deg,#C9748A,#9B7FD4);}
-.voice-bubble.them{background:#1A1A26;}
-.voice-play{background:rgba(255,255,255,0.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;cursor:pointer;font-size:11px;}
+.voice-bubble.me{background:var(--grad);}
+.voice-bubble.them{background:#1A1A28;}
+.voice-play{background:rgba(255,255,255,0.18);border:none;border-radius:50%;width:28px;height:28px;color:#fff;cursor:pointer;font-size:11px;transition:background 0.18s;}
+.voice-play:hover{background:rgba(255,255,255,0.28);}
 .voice-wave{flex:1;height:20px;display:flex;align-items:center;gap:2px;}
-.voice-bar{width:3px;background:rgba(255,255,255,0.4);border-radius:2px;}
-.voice-dur{font-size:11px;color:rgba(255,255,255,0.7);}
+.voice-bar{width:3px;background:rgba(255,255,255,0.35);border-radius:2px;}
+.voice-dur{font-size:11px;color:rgba(255,255,255,0.65);}
 .file-bubble{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;min-width:160px;}
-.file-bubble.me{background:linear-gradient(135deg,#C9748A,#9B7FD4);}
-.file-bubble.them{background:#1A1A26;}
+.file-bubble.me{background:var(--grad);}
+.file-bubble.them{background:#1A1A28;}
 .file-name{font-size:12px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;}
-.file-size{font-size:10px;color:rgba(255,255,255,0.6);}
+.file-size{font-size:10px;color:rgba(255,255,255,0.55);}
 
-/* ── MY PROFILE (4th tab) ── */
-#myProfileScreen{background:#0A0A0F;overflow-y:auto;padding-bottom:80px;}
+/* ── MY PROFILE ── */
+#myProfileScreen{background:var(--bg);overflow-y:auto;padding-bottom:80px;}
 
-/* ── NOTIFICATIONS ── */
-.notif{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#1E1E2A;border:1px solid rgba(201,116,138,0.3);border-radius:12px;padding:10px 18px;font-size:12px;color:#E8A0B0;z-index:1000;animation:notifIn 0.3s ease;max-width:300px;text-align:center;white-space:nowrap;}
-@keyframes notifIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.empty{text-align:center;padding:40px 20px;color:#3A3550;font-size:13px;line-height:2;}
-.section-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#5A5570;margin:16px 0 10px;}
+/* ── PRIVACY TOGGLE ── */
+.toggle-track{width:40px;height:22px;background:#2A2A3A;border-radius:11px;position:relative;cursor:pointer;transition:background 0.25s;}
+.toggle-track.on{background:var(--grad);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);}
+.toggle-track.on .toggle-thumb{transform:translateX(18px);}
+
+/* ── SECTION LABEL ── */
+.section-label{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin:14px 0 9px;}
+
+/* ── NOTIFICATION TOAST ── */
+.notif{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1C1C28;border:1px solid rgba(201,116,138,0.28);border-radius:20px;padding:9px 18px;font-size:12.5px;color:#E8A0B0;z-index:1000;animation:notifIn 0.3s cubic-bezier(0.34,1.56,0.64,1);max-width:300px;text-align:center;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,0.4);}
+@keyframes notifIn{from{opacity:0;transform:translateX(-50%) translateY(-14px) scale(0.92)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+.empty{text-align:center;padding:38px 20px;color:var(--dim);font-size:13px;line-height:2.1;}
 </style>
 </head>
 <body>
@@ -268,57 +320,36 @@ body{min-height:100vh;background:#0A0A0F;font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
-<!-- ══════════ INSTAGRAM PROFILE HOME ══════════ -->
+<!-- ══════════ HOME SCREEN ══════════ -->
 <div class="screen" id="profileHomeScreen">
-  <div class="insta-topbar z1">
-    <span class="insta-username" id="instaUsername">username</span>
-    <div class="insta-topbar-actions">
-      <button class="insta-icon-btn" onclick="showNotif('Settings coming soon!')">⚙️</button>
-    </div>
+  <!-- Add post button top-right -->
+  <div class="home-add-post-btn z1" onclick="document.getElementById('postPicker').click()" title="Add Photo / Video">
+    🎞️
+    <input type="file" id="postPicker" accept="image/*,video/*" style="display:none" onchange="addPost(this)" multiple>
   </div>
-  <div style="flex:1;overflow-y:auto;">
-    <div class="insta-profile-header z1">
-      <div class="insta-profile-top">
-        <div class="insta-avatar-wrap">
-          <div class="insta-avatar-ring"></div>
-          <div class="insta-avatar" id="instaAvatar">?</div>
-          <div class="insta-avatar-edit" onclick="document.getElementById('avatarPicker').click()">➕
-            <input type="file" id="avatarPicker" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
-          </div>
+
+  <div style="flex:1;overflow-y:auto;padding-bottom:80px;">
+    <!-- Centered avatar + story button -->
+    <div class="home-avatar-center z1">
+      <div class="home-avatar-outer">
+        <div class="insta-avatar-ring"></div>
+        <div class="insta-avatar" id="instaAvatar" style="width:96px;height:96px;font-size:38px;">?
+          <input type="file" id="avatarPicker" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
         </div>
-        <!-- REMOVED: posts, friends, my code stats from home -->
-      </div>
-      <div class="insta-profile-info">
-        <div class="insta-display-name" id="instaDisplayName">Display Name</div>
-        <div class="insta-bio" id="instaBio">Your bio here ✨</div>
-        <div class="insta-friend-code">
-          <span class="insta-friend-code-label">CODE</span>
-          <span class="insta-friend-code-val" id="instaFriendCode">—</span>
-          <button onclick="copyCode()" style="background:none;border:none;color:#C9748A;cursor:pointer;font-size:12px;">copy</button>
+        <!-- + story button sits on avatar bottom-right -->
+        <div class="home-story-btn" onclick="document.getElementById('storyPicker').click()" title="Add Story">＋
+          <input type="file" id="storyPicker" accept="image/*,video/*" style="display:none" onchange="addStory(this)">
         </div>
       </div>
-      <!-- REMOVED: Message Friends and Edit Profile buttons from home -->
+      <div style="margin-top:12px;font-size:15px;font-weight:600;color:#F2EEF5;" id="instaDisplayName">Display Name</div>
+      <div style="font-size:12px;color:#7A7090;margin-top:4px;" id="instaBio">Your bio here ✨</div>
     </div>
 
-    <!-- Stories -->
-    <div class="insta-stories z1">
-      <div class="story-item">
-        <div class="story-ring story-add"><div class="story-ring-inner">➕</div></div>
-        <span class="story-label">Add Story</span>
-      </div>
-    </div>
-
-    <!-- Posts tabs -->
-    <div class="insta-posts-tabs z1">
-      <div class="posts-tab on" onclick="switchPostTab('grid',this)">⊞</div>
-      <div class="posts-tab" onclick="switchPostTab('tagged',this)">🏷</div>
-    </div>
-
-    <!-- Grid -->
-    <div class="insta-grid z1" id="postsGrid">
-      <div class="grid-item grid-add" onclick="document.getElementById('postPicker').click()">
-        <div class="grid-add-inner"><span>➕</span><label>Add Photo</label></div>
-        <input type="file" id="postPicker" accept="image/*,video/*" style="display:none" onchange="addPost(this)" multiple>
+    <!-- Posts feed grid -->
+    <div class="home-posts-feed z1">
+      <div class="insta-grid" id="postsGrid"></div>
+      <div id="emptyPostsMsg" style="text-align:center;padding:40px 20px;color:#3A3550;font-size:13px;line-height:2;">
+        No posts yet 📸<br><span style="font-size:11px;">Tap 🎞️ in the top right to add photos or videos</span>
       </div>
     </div>
   </div>
@@ -335,7 +366,6 @@ body{min-height:100vh;background:#0A0A0F;font-family:-apple-system,BlinkMacSyste
 <div class="screen" id="chatScreen">
   <div class="chat-topbar z1">
     <span class="chat-topbar-title">COVA</span>
-    <button class="insta-icon-btn" onclick="navTo('home')" style="color:#A09AB0;">🏠</button>
   </div>
   <div class="chat-sub-tabs z1">
     <button class="chat-sub-tab on" onclick="switchChatSubTab('friends')" id="stFriends">My Friends</button>
@@ -405,7 +435,7 @@ body{min-height:100vh;background:#0A0A0F;font-family:-apple-system,BlinkMacSyste
 <div class="screen" id="myProfileScreen">
   <div class="insta-topbar z1">
     <span class="insta-username">My Profile</span>
-    <button class="insta-icon-btn" onclick="doSignout()" style="color:#E07070;">Sign Out</button>
+    <button class="insta-icon-btn" onclick="showNotif('Settings coming soon!')">⚙️</button>
   </div>
   <div style="flex:1;overflow-y:auto;" class="z1">
     <div class="insta-profile-header">
@@ -416,8 +446,8 @@ body{min-height:100vh;background:#0A0A0F;font-family:-apple-system,BlinkMacSyste
           <div class="insta-avatar-edit" onclick="document.getElementById('profAvatarPick').click()">✏️<input type="file" id="profAvatarPick" accept="image/*" style="display:none" onchange="uploadAvatar(this)"></div>
         </div>
         <div class="insta-stats">
-          <div class="insta-stat"><span class="insta-stat-num" id="profStatPosts">0</span><span class="insta-stat-label">posts</span></div>
-          <div class="insta-stat"><span class="insta-stat-num" id="profStatFriends">0</span><span class="insta-stat-label">friends</span></div>
+          <div class="insta-stat"><span class="insta-stat-num" id="profStatPosts">0</span><span class="insta-stat-label">POSTS</span></div>
+          <div class="insta-stat"><span class="insta-stat-num" id="profStatFriends">0</span><span class="insta-stat-label">FRIENDS</span></div>
         </div>
       </div>
       <div class="insta-profile-info">
@@ -431,9 +461,9 @@ body{min-height:100vh;background:#0A0A0F;font-family:-apple-system,BlinkMacSyste
         </div>
       </div>
 
-      <!-- ADDED: Edit Profile button on Profile page -->
-      <div class="insta-actions" style="margin-top:16px;">
-        <button class="insta-btn insta-btn-secondary" onclick="editProfile()">✏️ Edit Profile</button>
+      <div class="insta-actions" style="margin-top:14px;">
+        <button class="insta-btn insta-btn-secondary" onclick="editProfile()">✏️ Edit</button>
+        <button class="insta-btn insta-btn-danger" onclick="doSignout()">Sign Out</button>
       </div>
     </div>
 
@@ -443,21 +473,20 @@ body{min-height:100vh;background:#0A0A0F;font-family:-apple-system,BlinkMacSyste
       <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);">
           <span style="font-size:14px;color:#A09AB0;">📸 Screenshot alerts</span>
-          <div onclick="this.classList.toggle('on');togglePriv(this)" style="width:40px;height:22px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border-radius:11px;position:relative;cursor:pointer;"><div style="position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform 0.2s;transform:translateX(18px);"></div></div>
+          <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);">
-          <span style="font-size:14px;color:#A09AB0;">✓ Read receipts</span>
-          <div onclick="this.classList.toggle('on');togglePriv(this)" style="width:40px;height:22px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border-radius:11px;position:relative;cursor:pointer;"><div style="position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform 0.2s;transform:translateX(18px);"></div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid rgba(255,255,255,0.04);">
+          <span style="font-size:13.5px;color:#A09AB0;">✓ Read receipts</span>
+          <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;">
-          <span style="font-size:14px;color:#A09AB0;">🟢 Online status</span>
-          <div onclick="this.classList.toggle('on');togglePriv(this)" style="width:40px;height:22px;background:linear-gradient(135deg,#C9748A,#9B7FD4);border-radius:11px;position:relative;cursor:pointer;"><div style="position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform 0.2s;transform:translateX(18px);"></div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;">
+          <span style="font-size:13.5px;color:#A09AB0;">🟢 Online status</span>
+          <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div>
         </div>
       </div>
     </div>
 
-    <div style="margin:0 16px;padding:14px;background:rgba(224,112,112,0.05);border:1px solid rgba(224,112,112,0.15);border-radius:14px;text-align:center;cursor:pointer;font-size:13px;color:#E07070;" onclick="doSignout()">Sign Out</div>
-    <div style="height:40px"></div>
+    <div style="height:28px"></div>
   </div>
 
   <div class="bottom-nav z1">
@@ -490,7 +519,11 @@ onAuthStateChanged(auth,async u=>{
   if(u){
     ME=u;
     MY_PROFILE=await getProfile(u.uid);
-    if(MY_PROFILE){loadHomeProfile();showScreen('profileHomeScreen');}
+    if(MY_PROFILE){
+      try{await updateDoc(doc(db,'users',u.uid),{isOnline:true});}catch(e){}
+      syncAcceptedRequests().then(async()=>{MY_PROFILE=await getProfile(u.uid);loadHomeProfile();});
+      loadHomeProfile();showScreen('profileHomeScreen');
+    }
     else showScreen('authScreen');
   } else {
     ME=null;MY_PROFILE=null;showScreen('authScreen');
@@ -504,7 +537,29 @@ async function getProfile(uid){
   }catch(e){console.error('getProfile error',e);return null;}
 }
 
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+// Screen order for directional transitions
+const SCREEN_ORDER=['authScreen','profileHomeScreen','chatScreen','directChat','myProfileScreen'];
+function showScreen(id,dir){
+  const screens=document.querySelectorAll('.screen');
+  const current=[...screens].find(s=>s.classList.contains('active'));
+  const next=document.getElementById(id);
+  if(!next||current===next)return;
+  // Determine direction
+  const ci=SCREEN_ORDER.indexOf(current?.id);
+  const ni=SCREEN_ORDER.indexOf(id);
+  let inCls='fade-in',outCls='';
+  if(ci>=0&&ni>=0){
+    if(ni>ci){inCls='slide-in-right';outCls='slide-out-left';}
+    else{inCls='slide-in-left';outCls='slide-out-right';}
+  }
+  if(current){
+    if(outCls){current.classList.add(outCls);setTimeout(()=>{current.classList.remove('active','slide-out-left','slide-out-right');},260);}
+    else{current.classList.remove('active');}
+  }
+  next.classList.remove('slide-in-right','slide-in-left','fade-in','slide-out-left','slide-out-right');
+  next.classList.add('active',inCls);
+  setTimeout(()=>next.classList.remove('slide-in-right','slide-in-left','fade-in'),350);
+}
 
 window.navTo=function(page){
   if(page==='home'){showScreen('profileHomeScreen');loadHomeProfile();}
@@ -515,16 +570,21 @@ window.navTo=function(page){
 function loadHomeProfile(){
   if(!MY_PROFILE)return;
   window._fc=MY_PROFILE.friendCode;
-  document.getElementById('instaUsername').textContent=MY_PROFILE.displayName||'user';
-  document.getElementById('instaDisplayName').textContent=MY_PROFILE.displayName||'Display Name';
-  document.getElementById('instaBio').textContent=MY_PROFILE.bio||'Hey, I use COVA! 💕';
-  document.getElementById('instaFriendCode').textContent=MY_PROFILE.friendCode||'—';
+  const dn=document.getElementById('instaDisplayName');
+  if(dn)dn.textContent=MY_PROFILE.displayName||'Display Name';
+  const bio=document.getElementById('instaBio');
+  if(bio)bio.textContent=MY_PROFILE.bio||'Hey, I use COVA! 💕';
   const av=document.getElementById('instaAvatar');
-  if(MY_PROFILE.photoURL){
-    av.innerHTML=`<img src="${MY_PROFILE.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-  } else {
-    av.textContent=(MY_PROFILE.displayName||'?').charAt(0).toUpperCase();
+  if(av){
+    if(MY_PROFILE.photoURL){
+      av.innerHTML=`<img src="${MY_PROFILE.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"><input type="file" id="avatarPicker" accept="image/*" style="display:none" onchange="uploadAvatar(this)">`;
+    } else {
+      av.innerHTML=(MY_PROFILE.displayName||'?').charAt(0).toUpperCase()+`<input type="file" id="avatarPicker" accept="image/*" style="display:none" onchange="uploadAvatar(this)">`;
+    }
+    av.onclick=()=>document.getElementById('avatarPicker').click();
+    av.style.cursor='pointer';
   }
+  renderGrid();
 }
 
 function loadMyProfile(){
@@ -575,34 +635,41 @@ window.togglePriv=function(el){
 
 window.addPost=function(input){
   const files=Array.from(input.files);
+  if(!files.length)return;
   files.forEach(file=>{
     const url=URL.createObjectURL(file);
     localPosts.unshift({url,type:file.type.startsWith('video')?'video':'image'});
   });
   renderGrid();
-  document.getElementById('profStatPosts').textContent=localPosts.length;
-  showNotif(`${files.length} post(s) added! ✅`);
+  const psp=document.getElementById('profStatPosts');
+  if(psp)psp.textContent=localPosts.length;
+  showNotif(`${files.length} post${files.length>1?'s':''} added! ✅`);
+  input.value='';
+};
+
+window.addStory=function(input){
+  const file=input.files[0];
+  if(!file)return;
+  showNotif('Story added! 🌟');
   input.value='';
 };
 
 function renderGrid(){
   const grid=document.getElementById('postsGrid');
-  const addBtn=grid.querySelector('.grid-add');
+  if(!grid)return;
   grid.innerHTML='';
-  grid.appendChild(addBtn);
   localPosts.forEach(p=>{
     const item=document.createElement('div');
     item.className='grid-item';
-    if(p.type==='video'){item.innerHTML=`<video src="${p.url}" style="width:100%;height:100%;object-fit:cover;" muted></video>`;}
-    else{item.innerHTML=`<img src="${p.url}" alt="post" style="width:100%;height:100%;object-fit:cover;">`;}
+    if(p.type==='video'){item.innerHTML=`<video src="${p.url}" style="width:100%;height:100%;object-fit:cover;" muted playsinline></video>`;}
+    else{item.innerHTML=`<img src="${p.url}" alt="post" loading="lazy">`;}
     grid.appendChild(item);
   });
+  const emptyMsg=document.getElementById('emptyPostsMsg');
+  if(emptyMsg)emptyMsg.style.display=localPosts.length?'none':'block';
 }
 
-window.switchPostTab=function(tab,el){
-  document.querySelectorAll('.posts-tab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-};
+
 
 window.switchChatSubTab=function(tab){
   document.getElementById('tabFriends').classList.toggle('hidden',tab!=='friends');
@@ -648,10 +715,10 @@ async function loadFriends(){
       ?`<img src="${p.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
       :initial;
     el.innerHTML=`
-      <div class="friend-avatar">${avatarHtml}<div class="friend-online"></div></div>
+      <div class="friend-avatar">${avatarHtml}<div class="friend-online" style="background:${p.isOnline?'#6EC9A0':'#555570'};"></div></div>
       <div class="friend-info">
         <div class="friend-name">${p.displayName||'Unknown'}</div>
-        <div class="friend-preview">Code: ${p.friendCode||'—'} · Tap to message</div>
+        <div class="friend-preview">${p.isOnline?'🟢 Online':'⚫ Offline'} · Tap to message</div>
       </div>
       <div class="friend-meta"><span style="font-size:18px;color:#C9748A;">💬</span></div>`;
     el.onclick=async()=>{
@@ -662,8 +729,10 @@ async function loadFriends(){
         openDirectChat(p,chatId);
       }catch(err){
         el.style.opacity='1';
-        showNotif('Could not open chat. Try again.');
-        console.error('Chat open error',err);
+        // Even if chat ID lookup fails offline, open with a temp ID so user isn't blocked
+        const tempId='local_'+ME.uid+'_'+p.uid;
+        openDirectChat(p,tempId);
+        console.warn('Chat open offline fallback',err);
       }
     };
     list.appendChild(el);
@@ -702,6 +771,8 @@ function openDirectChat(peer,chatId){
     dcAvatar.textContent=initial;
   }
   document.getElementById('dchatName').textContent=peer.displayName||'—';
+  const statusEl=document.querySelector('.dchat-status');
+  if(statusEl){statusEl.textContent=peer.isOnline?'Online':'Offline';statusEl.style.color=peer.isOnline?'#6EC9A0':'#7A7090';}
   document.getElementById('attachRow').classList.remove('open');
   loadMessages(chatId);
 }
@@ -737,7 +808,7 @@ function loadRequests(){
           </div>
           <div class="req-card-btns">
             <button class="req-accept" onclick="acceptReq('${r.id}','${r.senderId}')">✅ Accept</button>
-            <button class="req-reject" onclick="rejectReq('${r.id}')">Reject</button>
+            <button class="req-reject" onclick="rejectReq('${r.id}')">✕ Reject</button>
           </div>
         </div>`).join('');
     });
@@ -777,14 +848,36 @@ window.sendFriendReq=async function(){
 
 window.acceptReq=async function(reqId,senderId){
   try{
+    // Only write to our own doc — Firestore rules allow this
     await updateDoc(doc(db,'users',ME.uid),{friends:arrayUnion(senderId)});
-    await updateDoc(doc(db,'users',senderId),{friends:arrayUnion(ME.uid)});
-    await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted'});
+    // Mark request accepted so sender can detect it and add us on their side
+    await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted',acceptedAt:serverTimestamp()});
+    // Refresh local profile
     MY_PROFILE=await getProfile(ME.uid);
     showNotif('Friend added! 🎉');
     loadFriends();
-  }catch(e){showNotif('Error accepting. Try again.');}
+  }catch(e){
+    console.error('acceptReq error',e);
+    showNotif('Error: '+e.message);
+  }
 };
+
+// Called on login/load: find any accepted requests we sent and add them as friends on our side
+async function syncAcceptedRequests(){
+  try{
+    const q=query(collection(db,'friendRequests'),where('senderId','==',ME.uid),where('status','==','accepted'));
+    const snap=await getDocs(q);
+    for(const d of snap.docs){
+      const r=d.data();
+      if(!(MY_PROFILE.friends||[]).includes(r.receiverId)){
+        await updateDoc(doc(db,'users',ME.uid),{friends:arrayUnion(r.receiverId)});
+        MY_PROFILE=await getProfile(ME.uid);
+      }
+      // Mark as synced so we don't re-process
+      await updateDoc(doc(db,'friendRequests',d.id),{status:'synced'});
+    }
+  }catch(e){console.error('syncAcceptedRequests error',e);}
+}
 
 window.rejectReq=async function(reqId){
   try{
@@ -988,6 +1081,7 @@ window.doForgot=async function(){
 
 window.doSignout=async function(){
   if(msgUnsub){msgUnsub();msgUnsub=null;}
+  if(ME){try{await updateDoc(doc(db,'users',ME.uid),{isOnline:false,lastSeen:serverTimestamp()});}catch(e){}}
   await signOut(auth);
 };
 window.copyCode=function(){navigator.clipboard.writeText(window._fc||'').then(()=>showNotif('Friend code copied! 📋')).catch(()=>showNotif(window._fc||''));};
@@ -1000,6 +1094,17 @@ function showNotif(msg){
 function fmtTime(d){const now=new Date(),diff=now-d;if(diff<60000)return'now';if(diff<3600000)return Math.floor(diff/60000)+'m';if(diff<86400000)return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');return d.getDate()+'/'+(d.getMonth()+1);}
 function fmtDur(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function fmtSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
+
+// Mark offline when tab/browser closes
+window.addEventListener('beforeunload',()=>{
+  if(ME){
+    // Use beacon for reliability on page close
+    const url=`https://firestore.googleapis.com/v1/projects/cova-app-db388/databases/(default)/documents/users/${ME? ME.uid:''}`;
+    navigator.sendBeacon && navigator.sendBeacon('/offline-ping','');
+    // Best effort Firestore update
+    try{updateDoc(doc(db,'users',ME.uid),{isOnline:false,lastSeen:serverTimestamp()});}catch(e){}
+  }
+});
 
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
