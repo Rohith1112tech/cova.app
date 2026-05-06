@@ -500,15 +500,53 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,updateProfile,sendPasswordResetEmail}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import{getFirestore,doc,setDoc,getDoc,addDoc,collection,query,where,getDocs,onSnapshot,orderBy,serverTimestamp,updateDoc,arrayUnion}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import{getStorage,ref,uploadBytes,getDownloadURL}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+// Cloudinary used for storage — no Firebase Storage import needed
 
-const cfg={apiKey:"AIzaSyB3D8kJBTWlau1krR0l1AygspGyK5iFXjA",authDomain:"cova-app-db388.firebaseapp.com",projectId:"cova-app-db388",storageBucket:"cova-app-db388.firebasestorage.app",messagingSenderId:"990241632749",appId:"1:990241632749:web:3fd86982a069d1ed6637e4"};
+// Firebase — Auth + Firestore only (Storage handled by Cloudinary)
+const cfg={apiKey:"AIzaSyB3D8kJBTWlau1krR0l1AygspGyK5iFXjA",authDomain:"cova-app-db388.firebaseapp.com",projectId:"cova-app-db388",messagingSenderId:"990241632749",appId:"1:990241632749:web:3fd86982a069d1ed6637e4"};
 const app=initializeApp(cfg);
 const auth=getAuth(app);
 const db=getFirestore(app);
-const storage=getStorage(app);
+// ── CLOUDINARY CONFIG ──
+const CLOUDINARY_CLOUD = 'cova';
+const CLOUDINARY_PRESET = 'cova_uploads';
+
+async function uploadToCloudinary(file, folder='misc'){
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+  fd.append('folder', folder);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, {
+    method: 'POST',
+    body: fd
+  });
+  if(!res.ok) throw new Error('Cloudinary upload failed: ' + res.status);
+  const data = await res.json();
+  return data.secure_url;
+}
 
 let ME=null,MY_PROFILE=null,CHAT_ID=null,PEER=null,msgUnsub=null;
+
+// ── FIRESTORE RULES REMINDER (paste these in Firebase Console → Firestore → Rules) ──
+// rules_version = '2';
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     match /users/{uid} {
+//       allow read: if request.auth != null;
+//       allow write: if request.auth.uid == uid;
+//     }
+//     match /friendRequests/{id} {
+//       allow read, write: if request.auth != null;
+//     }
+//     match /chats/{chatId} {
+//       allow read, write: if request.auth != null && request.auth.uid in resource.data.participants;
+//       allow create: if request.auth != null;
+//       match /messages/{msgId} {
+//         allow read, write: if request.auth != null;
+//       }
+//     }
+//   }
+// }
 let mediaRec=null,recChunks=[],recTimer=null,recSecs=0;
 let localPosts=[];
 
@@ -607,14 +645,12 @@ window.uploadAvatar=async function(input){
   const file=input.files[0];if(!file)return;
   showNotif('Uploading photo...');
   try{
-    const r=ref(storage,`avatars/${ME.uid}`);
-    await uploadBytes(r,file);
-    const url=await getDownloadURL(r);
+    const url=await uploadToCloudinary(file,'avatars');
     await updateDoc(doc(db,'users',ME.uid),{photoURL:url});
     MY_PROFILE.photoURL=url;
     loadHomeProfile();loadMyProfile();
     showNotif('Profile photo updated! ✅');
-  }catch(e){showNotif('Upload failed. Check Storage rules.');}
+  }catch(e){console.error('Avatar upload error:',e);showNotif('Upload failed: '+e.message);}
 };
 
 window.editProfile=function(){
@@ -747,15 +783,17 @@ async function getOrCreateChat(peerId){
       const data=d.data();
       if(data.participants && data.participants.includes(peerId))return d.id;
     }
-    const newRef=await addDoc(collection(db,'chats'),{
+    // Create new chat — both users are participants
+    const chatData={
       participants:[ME.uid,peerId],
       createdAt:serverTimestamp(),
       lastMessage:'',
       lastMessageTime:serverTimestamp()
-    });
+    };
+    const newRef=await addDoc(collection(db,'chats'),chatData);
     return newRef.id;
   }catch(e){
-    console.error('getOrCreateChat error',e);
+    console.error('getOrCreateChat error:',e.code,e.message);
     throw e;
   }
 }
@@ -928,11 +966,28 @@ window.sendMsg=async function(){
   const input=document.getElementById('msgInput');
   const text=input.value.trim();
   if(!text||!CHAT_ID)return;
-  input.value='';input.style.height='';
+  // Don't clear input until we know it went through
   try{
-    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{text,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false,type:'text'});
-    await updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:text,lastMessageTime:serverTimestamp()});
-  }catch(e){showNotif('Failed to send. Check connection.');}
+    await addDoc(collection(db,'chats',CHAT_ID,'messages'),{
+      text,
+      senderId:ME.uid,
+      senderName:MY_PROFILE.displayName,
+      createdAt:serverTimestamp(),
+      deleted:false,
+      type:'text'
+    });
+    // Only clear after successful send
+    input.value='';input.style.height='';
+    // Update chat metadata (non-critical, don't await)
+    updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:text,lastMessageTime:serverTimestamp()}).catch(()=>{});
+  }catch(e){
+    console.error('sendMsg error:',e.code,e.message);
+    if(e.code==='permission-denied'){
+      showNotif('⚠️ Permission denied — update Firestore rules');
+    } else {
+      showNotif('Failed to send: '+e.code);
+    }
+  }
 };
 window.msgKey=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}};
 window.autoResize=function(el){el.style.height='';el.style.height=Math.min(el.scrollHeight,120)+'px';};
@@ -941,12 +996,11 @@ window.sendImage=async function(input){
   const file=input.files[0];if(!file)return;
   showNotif('Uploading image...');
   try{
-    const r=ref(storage,`chats/${CHAT_ID}/images/${Date.now()}`);
-    await uploadBytes(r,file);
-    const url=await getDownloadURL(r);
+    const url=await uploadToCloudinary(file,'chat_images');
     await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'image',url,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false});
-    await updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'📷 Image',lastMessageTime:serverTimestamp()});
-  }catch(e){showNotif('Upload failed.');}
+    updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'📷 Image',lastMessageTime:serverTimestamp()}).catch(()=>{});
+    showNotif('Image sent! ✅');
+  }catch(e){console.error('Image upload error:',e);showNotif('Upload failed: '+e.message);}
   input.value='';
 };
 
@@ -954,12 +1008,11 @@ window.sendFile=async function(input){
   const file=input.files[0];if(!file)return;
   showNotif('Uploading file...');
   try{
-    const r=ref(storage,`chats/${CHAT_ID}/files/${Date.now()}_${file.name}`);
-    await uploadBytes(r,file);
-    const url=await getDownloadURL(r);
+    const url=await uploadToCloudinary(file,'chat_files');
     await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'file',url,fileName:file.name,fileSize:fmtSize(file.size),senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false});
-    await updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'📄 '+file.name,lastMessageTime:serverTimestamp()});
-  }catch(e){showNotif('Upload failed.');}
+    updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'📄 '+file.name,lastMessageTime:serverTimestamp()}).catch(()=>{});
+    showNotif('File sent! ✅');
+  }catch(e){console.error('File upload error:',e);showNotif('Upload failed: '+e.message);}
   input.value='';
 };
 
@@ -986,12 +1039,11 @@ window.stopRec=async function(){
   mediaRec.onstop=async()=>{
     const blob=new Blob(recChunks,{type:'audio/webm'});
     try{
-      const r=ref(storage,`chats/${CHAT_ID}/voice/${Date.now()}.webm`);
-      await uploadBytes(r,blob);
-      const url=await getDownloadURL(r);
+      const voiceFile=new File([blob],`voice_${Date.now()}.webm`,{type:'audio/webm'});
+      const url=await uploadToCloudinary(voiceFile,'chat_voice');
       await addDoc(collection(db,'chats',CHAT_ID,'messages'),{type:'voice',url,duration:dur,senderId:ME.uid,senderName:MY_PROFILE.displayName,createdAt:serverTimestamp(),deleted:false});
-      await updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'🎤 Voice note',lastMessageTime:serverTimestamp()});
-    }catch(e){showNotif('Voice upload failed.');}
+      updateDoc(doc(db,'chats',CHAT_ID),{lastMessage:'🎤 Voice note',lastMessageTime:serverTimestamp()}).catch(()=>{});
+    }catch(e){console.error('Voice upload error:',e);showNotif('Voice upload failed: '+e.message);}
   };
   mediaRec=null;
 };
