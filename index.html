@@ -220,10 +220,13 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .dot:nth-child(2){animation-delay:0.2s;}
 .dot:nth-child(3){animation-delay:0.4s;}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
-.ctx-menu{position:fixed;background:#1C1C28;border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:5px;z-index:200;min-width:155px;box-shadow:0 12px 40px rgba(0,0,0,0.5);animation:fadeIn 0.15s ease;}
-.ctx-item{padding:9px 13px;font-size:12.5px;color:#A09AB0;cursor:pointer;border-radius:8px;transition:background 0.15s;}
-.ctx-item:hover{background:rgba(255,255,255,0.06);color:var(--text);}
+.ctx-menu{position:fixed;background:#1C1C28;border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:5px;z-index:300;min-width:160px;box-shadow:0 16px 48px rgba(0,0,0,0.6);animation:ctxPop 0.18s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes ctxPop{from{opacity:0;transform:scale(0.88)}to{opacity:1;transform:scale(1)}}
+.ctx-item{padding:11px 14px;font-size:13px;color:#A09AB0;cursor:pointer;border-radius:9px;transition:background 0.15s;display:flex;align-items:center;gap:8px;}
+.ctx-item:hover,.ctx-item:active{background:rgba(255,255,255,0.06);color:var(--text);}
 .ctx-item.danger{color:var(--danger);}
+/* Long press feedback */
+.img-bubble:active,.voice-bubble:active,.file-bubble:active,.bubble:active{opacity:0.75;transform:scale(0.97);transition:all 0.1s;}
 .chat-input-bar{display:flex;align-items:flex-end;gap:8px;padding:11px 14px;border-top:1px solid var(--border);flex-shrink:0;}
 .attach-row{display:none;padding:8px 14px;gap:12px;border-top:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
 .attach-row.open{display:flex;}
@@ -277,6 +280,18 @@ body{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 /* ── NOTIFICATION TOAST ── */
 .notif{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1C1C28;border:1px solid rgba(201,116,138,0.28);border-radius:20px;padding:9px 18px;font-size:12.5px;color:#E8A0B0;z-index:1000;animation:notifIn 0.3s cubic-bezier(0.34,1.56,0.64,1);max-width:300px;text-align:center;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,0.4);}
 @keyframes notifIn{from{opacity:0;transform:translateX(-50%) translateY(-14px) scale(0.92)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+
+/* ── MESSAGE NOTIFICATION POPUP ── */
+.msg-notif-popup{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1C1C28;border:1px solid rgba(201,116,138,0.35);border-radius:18px;padding:11px 16px;z-index:2000;animation:notifIn 0.35s cubic-bezier(0.34,1.56,0.64,1);max-width:320px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,0.55);cursor:pointer;display:flex;align-items:center;gap:12px;}
+.msg-notif-avatar{width:38px;height:38px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0;font-weight:600;}
+.msg-notif-body{flex:1;min-width:0;}
+.msg-notif-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.msg-notif-text{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.msg-notif-time{font-size:10px;color:var(--dim);flex-shrink:0;}
+
+/* ── UNREAD BADGE on friend item ── */
+.unread-count{min-width:18px;height:18px;background:var(--grad);border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;padding:0 5px;}
+
 .empty{text-align:center;padding:38px 20px;color:var(--dim);font-size:13px;line-height:2.1;}
 </style>
 </head>
@@ -526,6 +541,10 @@ async function uploadToCloudinary(file, folder='misc'){
 }
 
 let ME=null,MY_PROFILE=null,CHAT_ID=null,PEER=null,msgUnsub=null;
+let globalChatUnsubs=[];   // real-time listeners for all chats
+let unreadCounts={};       // chatId -> unread count
+let lastSeenTimes={};      // chatId -> timestamp of last read
+let popupTimeout=null;     // auto-dismiss timer for msg popup
 
 // ── FIRESTORE RULES REMINDER (paste these in Firebase Console → Firestore → Rules) ──
 // rules_version = '2';
@@ -561,6 +580,7 @@ onAuthStateChanged(auth,async u=>{
       try{await updateDoc(doc(db,'users',u.uid),{isOnline:true});}catch(e){}
       syncAcceptedRequests().then(async()=>{MY_PROFILE=await getProfile(u.uid);loadHomeProfile();});
       loadHomeProfile();showScreen('profileHomeScreen');
+      startGlobalMessageListener();
     }
     else showScreen('authScreen');
   } else {
@@ -800,6 +820,10 @@ async function getOrCreateChat(peerId){
 
 function openDirectChat(peer,chatId){
   PEER=peer;CHAT_ID=chatId;
+  // Mark this chat as read
+  lastSeenTimes[chatId]=Date.now();
+  unreadCounts[chatId]=0;
+  updateChatBadge();
   showScreen('directChat');
   const initial=(peer.displayName||'?').charAt(0).toUpperCase();
   const dcAvatar=document.getElementById('dchatAvatar');
@@ -924,6 +948,24 @@ window.rejectReq=async function(reqId){
   }catch(e){showNotif('Error rejecting.');}
 };
 
+// Long-press detection for touch devices
+let _lpTimer=null;
+function attachHoldAndRightClick(el,msgId,isMe){
+  // Right click (desktop)
+  el.addEventListener('contextmenu',e=>{e.preventDefault();showCtx(e,msgId,isMe);});
+  // Long press (mobile) — 500ms hold
+  el.addEventListener('touchstart',e=>{
+    _lpTimer=setTimeout(()=>{
+      // Simulate position from touch
+      const touch=e.touches[0];
+      const fakeEvt={clientX:touch.clientX,clientY:touch.clientY,preventDefault:()=>{}};
+      showCtx(fakeEvt,msgId,isMe);
+    },500);
+  },{passive:true});
+  el.addEventListener('touchend',()=>clearTimeout(_lpTimer),{passive:true});
+  el.addEventListener('touchmove',()=>clearTimeout(_lpTimer),{passive:true});
+}
+
 function loadMessages(chatId){
   if(msgUnsub)msgUnsub();
   const q=query(collection(db,'chats',chatId,'messages'),orderBy('createdAt','asc'));
@@ -937,20 +979,48 @@ function loadMessages(chatId){
       const row=document.createElement('div');
       row.className='msg-row'+(isMe?' me':'');
       const t=m.createdAt?.toDate?fmtTime(m.createdAt.toDate()):'';
+
       if(m.type==='system'){
         row.innerHTML=`<div class="bubble system-msg">🔔 ${m.text}</div>`;
+
       } else if(m.deleted){
         row.innerHTML=`<div class="bubble ${isMe?'me':'them'} deleted">🚫 This message was deleted</div>`;
+
       } else if(m.type==='image'){
-        row.innerHTML=`<div class="img-bubble"><img src="${m.url}" loading="lazy"></div><div class="msg-time">${t}</div>`;
+        const wrap=document.createElement('div');
+        wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start');
+        wrap.innerHTML=`<div class="img-bubble" style="cursor:pointer;user-select:none;-webkit-user-select:none;"><img src="${m.url}" loading="lazy"></div><div class="msg-time">${t}</div>`;
+        const imgBubble=wrap.querySelector('.img-bubble');
+        attachHoldAndRightClick(imgBubble,d.id,isMe);
+        row.appendChild(wrap);
+
       } else if(m.type==='voice'){
         const bars=Array.from({length:10},()=>`<div class="voice-bar" style="height:${4+Math.random()*12}px"></div>`).join('');
-        row.innerHTML=`<div class="voice-bubble ${isMe?'me':'them'}"><button class="voice-play" onclick="playVoice('${m.url}',this)">▶</button><div class="voice-wave">${bars}</div><span class="voice-dur">${fmtDur(m.duration||0)}</span></div><div class="msg-time">${t}</div>`;
+        const wrap=document.createElement('div');
+        wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start');
+        wrap.innerHTML=`<div class="voice-bubble ${isMe?'me':'them'}" style="user-select:none;-webkit-user-select:none;"><button class="voice-play" onclick="playVoice('${m.url}',this)">▶</button><div class="voice-wave">${bars}</div><span class="voice-dur">${fmtDur(m.duration||0)}</span></div><div class="msg-time">${t}</div>`;
+        const vBubble=wrap.querySelector('.voice-bubble');
+        attachHoldAndRightClick(vBubble,d.id,isMe);
+        row.appendChild(wrap);
+
       } else if(m.type==='file'){
-        row.innerHTML=`<div class="file-bubble ${isMe?'me':'them'}"><span style="font-size:22px">📄</span><div><div class="file-name">${m.fileName}</div><div class="file-size">${m.fileSize}</div></div><a href="${m.url}" download="${m.fileName}" style="color:#fff;font-size:18px;text-decoration:none">⬇</a></div><div class="msg-time">${t}</div>`;
+        const wrap=document.createElement('div');
+        wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start');
+        wrap.innerHTML=`<div class="file-bubble ${isMe?'me':'them'}" style="user-select:none;-webkit-user-select:none;"><span style="font-size:22px">📄</span><div><div class="file-name">${m.fileName}</div><div class="file-size">${m.fileSize}</div></div><a href="${m.url}" download="${m.fileName}" style="color:#fff;font-size:18px;text-decoration:none" onclick="event.stopPropagation()">⬇</a></div><div class="msg-time">${t}</div>`;
+        const fBubble=wrap.querySelector('.file-bubble');
+        attachHoldAndRightClick(fBubble,d.id,isMe);
+        row.appendChild(wrap);
+
       } else {
-        row.innerHTML=`<div class="bubble ${isMe?'me':'them'}" oncontextmenu="showCtx(event,'${d.id}',${isMe})" ondblclick="showCtx(event,'${d.id}',${isMe})">${escHtml(m.text||'')}<div class="msg-status">${isMe?'✓✓':''}</div></div><div class="msg-time">${t}</div>`;
+        // Text message
+        const wrap=document.createElement('div');
+        wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start');
+        wrap.innerHTML=`<div class="bubble ${isMe?'me':'them'}" style="user-select:none;-webkit-user-select:none;">${escHtml(m.text||'')}<div class="msg-status">${isMe?'✓✓':''}</div></div><div class="msg-time">${t}</div>`;
+        const bubble=wrap.querySelector('.bubble');
+        attachHoldAndRightClick(bubble,d.id,isMe);
+        row.appendChild(wrap);
       }
+
       list.appendChild(row);
     });
     list.scrollTop=list.scrollHeight;
@@ -1061,13 +1131,33 @@ window.playVoice=function(url,btn){
 
 let ctxMenu=null;
 window.showCtx=function(e,msgId,isMe){
-  e.preventDefault();if(ctxMenu)ctxMenu.remove();
-  const menu=document.createElement('div');menu.className='ctx-menu';
-  menu.style.top=(e.clientY-90)+'px';menu.style.left=Math.min(e.clientX,window.innerWidth-160)+'px';
-  menu.innerHTML=`<div class="ctx-item" onclick="delForMe('${msgId}')">🗑 Delete for me</div>${isMe?`<div class="ctx-item danger" onclick="delForBoth('${msgId}')">🚫 Delete for everyone</div>`:''}<div class="ctx-item" onclick="if(ctxMenu)ctxMenu.remove()">✕ Cancel</div>`;
-  document.body.appendChild(menu);ctxMenu=menu;
-  setTimeout(()=>document.addEventListener('click',()=>{if(ctxMenu){ctxMenu.remove();ctxMenu=null;}},{once:true}),50);
+  if(e&&e.preventDefault)e.preventDefault();
+  if(ctxMenu){ctxMenu.remove();ctxMenu=null;}
+
+  const menu=document.createElement('div');
+  menu.className='ctx-menu';
+
+  // Position smartly — keep inside viewport
+  const x=Math.min((e.clientX||window.innerWidth/2),window.innerWidth-170);
+  const y=Math.max((e.clientY||100)-10,60);
+  menu.style.top=y+'px';
+  menu.style.left=x+'px';
+
+  menu.innerHTML=`
+    <div class="ctx-item" onclick="delForMe('${msgId}')">🗑️ Delete for me</div>
+    ${isMe?`<div class="ctx-item danger" onclick="delForBoth('${msgId}')">🚫 Delete for everyone</div>`:''}
+    <div class="ctx-item" style="color:var(--muted);border-top:1px solid var(--border);margin-top:4px;padding-top:8px;" onclick="closeCtx()">✕ Cancel</div>`;
+
+  document.body.appendChild(menu);
+  ctxMenu=menu;
+
+  // Close on outside tap/click
+  setTimeout(()=>{
+    document.addEventListener('click',closeCtx,{once:true});
+    document.addEventListener('touchstart',closeCtx,{once:true,passive:true});
+  },80);
 };
+window.closeCtx=function(){if(ctxMenu){ctxMenu.remove();ctxMenu=null;}};
 window.delForMe=async function(id){if(ctxMenu)ctxMenu.remove();await updateDoc(doc(db,'chats',CHAT_ID,'messages',id),{deletedFor:arrayUnion(ME.uid)});};
 window.delForBoth=async function(id){
   if(ctxMenu)ctxMenu.remove();
@@ -1131,8 +1221,165 @@ window.doForgot=async function(){
   }catch(e){showErr('liErr',errMsg(e.code));}
 };
 
+// ════════════════════════════════════════
+// GLOBAL MESSAGE NOTIFICATION SYSTEM
+// ════════════════════════════════════════
+
+function updateChatBadge(){
+  const total=Object.values(unreadCounts).reduce((a,b)=>a+b,0);
+  // Update ALL chat badge dots across all bottom navs
+  document.querySelectorAll('#chatBadge').forEach(b=>{
+    if(total>0){b.classList.remove('hidden');b.textContent=total>9?'9+':total||'';}
+    else{b.classList.add('hidden');}
+  });
+}
+
+function showMsgPopup(senderName,senderPhoto,msgText,chatId,peerId){
+  // Don't show popup if we're already in that chat
+  if(CHAT_ID===chatId&&document.getElementById('directChat').classList.contains('active'))return;
+  // Remove any existing popup
+  document.querySelectorAll('.msg-notif-popup').forEach(p=>p.remove());
+  clearTimeout(popupTimeout);
+
+  const initial=(senderName||'?').charAt(0).toUpperCase();
+  const avatarHtml=senderPhoto
+    ?`<img src="${senderPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+    :initial;
+  const preview=msgText==='📷 Image'?'📷 Sent an image'
+    :msgText==='🎤 Voice note'?'🎤 Voice note'
+    :msgText.startsWith('📄')?'📄 Sent a file'
+    :msgText.length>40?msgText.slice(0,40)+'…':msgText;
+
+  const popup=document.createElement('div');
+  popup.className='msg-notif-popup';
+  popup.innerHTML=`
+    <div class="msg-notif-avatar">${avatarHtml}</div>
+    <div class="msg-notif-body">
+      <div class="msg-notif-name">${senderName||'Someone'}</div>
+      <div class="msg-notif-text">${preview}</div>
+    </div>
+    <div class="msg-notif-time">now</div>`;
+
+  // Tap popup to open that chat
+  popup.onclick=async()=>{
+    popup.remove();
+    const peerProfile=await getProfile(peerId).catch(()=>null);
+    if(peerProfile){
+      const cid=await getOrCreateChat(peerId).catch(()=>chatId);
+      openDirectChat(peerProfile,cid);
+    }
+  };
+  document.body.appendChild(popup);
+
+  // Vibrate on mobile if supported
+  if(navigator.vibrate)navigator.vibrate([80,40,80]);
+
+  // Auto-dismiss after 4 seconds with fade
+  popupTimeout=setTimeout(()=>{
+    popup.style.transition='opacity 0.3s,transform 0.3s';
+    popup.style.opacity='0';
+    popup.style.transform='translateX(-50%) translateY(-10px)';
+    setTimeout(()=>popup.remove(),300);
+  },4000);
+}
+
+async function startGlobalMessageListener(){
+  // Clear old listeners
+  globalChatUnsubs.forEach(u=>u());
+  globalChatUnsubs=[];
+
+  // Listen to all chats where I'm a participant
+  const chatsQ=query(collection(db,'chats'),where('participants','array-contains',ME.uid));
+  const chatSnap=await getDocs(chatsQ).catch(()=>({docs:[]}));
+
+  const loginTime=Date.now();
+
+  chatSnap.docs.forEach(chatDoc=>{
+    const chatId=chatDoc.id;
+    const chatData=chatDoc.data();
+    const peerId=(chatData.participants||[]).find(id=>id!==ME.uid);
+    if(!peerId)return;
+
+    // Initialize unread count
+    if(unreadCounts[chatId]===undefined)unreadCounts[chatId]=0;
+    if(lastSeenTimes[chatId]===undefined)lastSeenTimes[chatId]=loginTime;
+
+    // Listen to messages in this chat
+    const msgQ=query(
+      collection(db,'chats',chatId,'messages'),
+      orderBy('createdAt','desc')
+    );
+
+    const unsub=onSnapshot(msgQ,async snap=>{
+      for(const change of snap.docChanges()){
+        if(change.type!=='added')continue;
+        const msg=change.doc.data();
+        // Skip own messages, deleted, system, or messages older than login
+        if(msg.senderId===ME.uid)continue;
+        if(msg.deleted||msg.type==='system')continue;
+        const msgTime=msg.createdAt?.toMillis?.()||0;
+        if(msgTime<loginTime)continue;
+        // Skip if already seen (chat is open)
+        if(CHAT_ID===chatId&&document.getElementById('directChat').classList.contains('active'))continue;
+
+        // Increment unread
+        unreadCounts[chatId]=(unreadCounts[chatId]||0)+1;
+        updateChatBadge();
+
+        // Get sender profile for popup
+        const senderProfile=await getProfile(msg.senderId).catch(()=>null);
+        showMsgPopup(
+          msg.senderName||senderProfile?.displayName||'Someone',
+          senderProfile?.photoURL||null,
+          msg.text||msg.type||'',
+          chatId,
+          peerId
+        );
+
+        // Update friend list preview text if visible
+        const friendItems=document.querySelectorAll('.friend-item');
+        friendItems.forEach(item=>{
+          const nameEl=item.querySelector('.friend-name');
+          if(nameEl&&nameEl.textContent===(msg.senderName||'')){
+            const preview=item.querySelector('.friend-preview');
+            if(preview)preview.textContent='💬 '+(msg.text||'New message');
+            // Show unread dot
+            const meta=item.querySelector('.friend-meta');
+            if(meta&&!meta.querySelector('.unread-count')){
+              const badge=document.createElement('span');
+              badge.className='unread-count';
+              badge.id='unread_'+chatId;
+              badge.textContent=unreadCounts[chatId];
+              meta.innerHTML='';
+              meta.appendChild(badge);
+            } else if(meta){
+              const b=meta.querySelector('.unread-count');
+              if(b)b.textContent=unreadCounts[chatId];
+            }
+          }
+        });
+      }
+    },err=>console.warn('Global msg listener error:',err));
+
+    globalChatUnsubs.push(unsub);
+  });
+
+  // Also watch for new chats being created (someone messages for first time)
+  const newChatUnsub=onSnapshot(chatsQ,snap=>{
+    snap.docChanges().forEach(change=>{
+      if(change.type==='added'){
+        // Re-run listener setup for the new chat
+        setTimeout(()=>startGlobalMessageListener(),1000);
+      }
+    });
+  },()=>{});
+  globalChatUnsubs.push(newChatUnsub);
+}
+
 window.doSignout=async function(){
   if(msgUnsub){msgUnsub();msgUnsub=null;}
+  globalChatUnsubs.forEach(u=>u());globalChatUnsubs=[];
+  unreadCounts={};lastSeenTimes={};
   if(ME){try{await updateDoc(doc(db,'users',ME.uid),{isOnline:false,lastSeen:serverTimestamp()});}catch(e){}}
   await signOut(auth);
 };
